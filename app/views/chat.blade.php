@@ -64,7 +64,7 @@
             }
 
             var dist = 0;
-            if (conn) {
+            if (conn == null) {
                 var from = new google.maps.LatLng(lat, lon);
                 var to   = new google.maps.LatLng(lat2, lon2);
                 dist = google.maps.geometry.spherical.computeDistanceBetween(from, to);
