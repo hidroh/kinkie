@@ -51,7 +51,7 @@
                 e = JSON.parse(e.data);
 				
 				if(e.type == 'message') {
-					addMessage(e.message, null, e.image, e.latitude, e.longitude);
+					addMessage(e.message, null, e.image, e.latitude, e.longitude, e.user_id);
 				}
             }
 
@@ -87,18 +87,24 @@
             });
 
             var p = $('<p/>').text(e);
-
-            var text = $('<div/>').addClass('text').append(p);
-            var avatar = $('<div/>').addClass('avatar').css('backgroundImage', "url('" + image + "')");
-            var away = $('<div/>').addClass('away');
-            var dist = 0;
-            if (conn == null && lat2 && lon2) {
-                var from = new google.maps.LatLng(lat, lon);
-                var to   = new google.maps.LatLng(lat2, lon2);
-                dist = google.maps.geometry.spherical.computeDistanceBetween(from, to);
-                $(away).text(Math.ceil(dist) + 'm away');
+            var text = $('<div/>').addClass('text');
+            if (lastMessage == userid) {
+                var div = $('#messagebox .message:last-child');
+                div.find('.text').append(p);
+            } else {
+                text.append(p);
+                var avatar = $('<div/>').addClass('avatar').css('backgroundImage', "url('" + image + "')");
+                var away = $('<div/>').addClass('away');
+                var dist = 0;
+                if (conn == null && lat2 && lon2) {
+                    var from = new google.maps.LatLng(lat, lon);
+                    var to   = new google.maps.LatLng(lat2, lon2);
+                    dist = google.maps.geometry.spherical.computeDistanceBetween(from, to);
+                    $(away).text(Math.ceil(dist) + 'm away');
+                }
+                var div = $('<div />').addClass('message').append(text).append(avatar).append(away);
             }
-            var div = $('<div />').addClass('message').append(text).append(avatar).append(away);
+
             $('#messagebox').append(div);
 
             $('.message').addClass('show');
@@ -133,109 +139,6 @@
 
         <div id="noone" style="margin-top:-12px;position:absolute;width:100%;color:#c0c0c0;text-align:center;font-size:28px;">Yey! You're alone <i class="icon-meh"></i></div>
 
-        <!--div class="message">
-            <div class="text" style="">
-                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem.</p>
-            </div>
-            <div class="avatar"></div>
-            <div class="away">32m away</div>
-        </div>
-        <div class="message mine">
-            <div class="text" style="">
-                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id</p>
-            </div>
-            <div class="avatar"></div>
-            <div class="away">32m away</div>
-        </div>
-        <div class="message">
-            <div class="text" style="">
-                <p>accumsan porta arcu et pulvinar.</p>
-                <p>accumsan porta arcu et pulvinar.</p>
-            </div>
-            <div class="avatar"></div>
-            <div class="away">32m away</div>
-        </div>
-        <div class="message">
-            <div class="text" style="">
-                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem. Vestibulum ante ipsum primis</p>
-            </div>
-            <div class="avatar"></div>
-            <div class="away">32m away</div>
-        </div>
-        <div class="message">
-            <div class="text" style="">
-                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; </p>
-            </div>
-            <div class="avatar"></div>
-            <div class="away">32m away</div>
-        </div>
-        <div class="message">
-            <div class="text" style="">
-                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem.</p>
-            </div>
-            <div class="avatar"></div>
-            <div class="away">32m away</div>
-        </div>
-        <div class="message mine">
-            <div class="text" style="">
-                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id</p>
-            </div>
-            <div class="avatar"></div>
-            <div class="away">32m away</div>
-        </div>
-        <div class="message">
-            <div class="text" style="">
-                <p>accumsan porta arcu et pulvinar.</p>
-                <p>accumsan porta arcu et pulvinar.</p>
-            </div>
-            <div class="avatar"></div>
-            <div class="away">32m away</div>
-        </div>
-        <div class="message">
-            <div class="text" style="">
-                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem. Vestibulum ante ipsum primis</p>
-            </div>
-            <div class="avatar"></div>
-            <div class="away">32m away</div>
-        </div>
-        <div class="message">
-            <div class="text" style="">
-                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; </p>
-            </div>
-            <div class="avatar"></div>
-        </div>
-        <div class="message">
-            <div class="text" style="">
-                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem.</p>
-            </div>
-            <div class="avatar"></div>
-        </div>
-        <div class="message mine">
-            <div class="text" style="">
-                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id</p>
-            </div>
-            <div class="avatar"></div>
-        </div>
-        <div class="message">
-            <div class="text" style="">
-                <p>accumsan porta arcu et pulvinar.</p>
-                <p>accumsan porta arcu et pulvinar.</p>
-            </div>
-            <div class="avatar"></div>
-        </div>
-        <div class="message">
-            <div class="text" style="">
-                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem. Vestibulum ante ipsum primis</p>
-            </div>
-            <div class="avatar"></div>
-        </div>
-        <div class="message">
-            <div class="text" style="">
-                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; </p>
-            </div>
-            <div class="avatar"></div>
-        </div-->
-
     </div>
 
 
@@ -250,7 +153,7 @@
         <div class="textbar">
             <button class="btn smily" style="position:absolute;top:0;left:0;width:50px;margin:10px;font-size:20px;"><i class="icon-smile"></i></button>
             <textarea id="text" placeholder="Your brainwords go here..." style="margin:10px 20px;min-height:32px;height:32px;padding:6px 9px !important;"></textarea>
-            <button class="btn send" disabled style="position:absolute;top:0;right:0;width:90px;margin:10px;">Send <i class="icon-rocket"></i></button>
+            <button class="btn send" disabled style="position:absolute;top:0;right:0;width:90px;margin:10px;">Send <i class="icon-heart"></i></button>
         </div>
     </div>
 
