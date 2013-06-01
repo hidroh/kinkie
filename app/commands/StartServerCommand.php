@@ -1,6 +1,7 @@
 <?php
 
 use Ratchet\Server\IoServer;
+use Ratchet\WebSocket\WsServer;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
@@ -40,7 +41,11 @@ class StartServerCommand extends Command {
 	public function fire()
 	{
 		$this->info('Starting server...');
-		$server = IoServer::factory(new ChatController(), 8080);
+		$server = IoServer::factory(
+			new WsServer(
+				new ChatController()
+			), 8080
+		);
 		$server->run();
 		
 	}
