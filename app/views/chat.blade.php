@@ -141,7 +141,7 @@
 
     <div id="messagebox">
 
-        <div id="noone" style="margin-top:-12px;position:absolute;width:100%;color:#c0c0c0;text-align:center;font-size:28px;">Yey! You're alone <i class="icon-meh"></i></div>
+        <div id="noone" style="margin-top:-12px;position:absolute;width:100%;color:#c0c0c0;text-align:center;font-size:28px;">It's lonely in here <i class="icon-meh"></i><p style="font-size:15px;">Why not say something to start a conversation</p></div>
 
     </div>
 
