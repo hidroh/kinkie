@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.angelhack.wheresapp.model.DummyContent;
+import com.angelhack.wheresapp.model.Message;
 
 /**
  * A list fragment representing a list of Messages. This fragment also supports
@@ -58,6 +58,8 @@ public class MessageListFragment extends ListFragment {
 		public void onItemSelected(String id) {
 		}
 	};
+	
+	private ArrayAdapter<Message> mAdapter;
 
 	/**
 	 * Mandatory empty constructor for the fragment manager to instantiate the
@@ -71,9 +73,10 @@ public class MessageListFragment extends ListFragment {
 		super.onCreate(savedInstanceState);
 
 		// TODO: replace with a real list adapter.
-		setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-				android.R.layout.simple_list_item_activated_1,
-				android.R.id.text1, DummyContent.ITEMS));
+		mAdapter = new ArrayAdapter<Message>(getActivity(),
+				R.layout.list_item_message,
+				android.R.id.text1);
+		setListAdapter(mAdapter);
 	}
 
 	@Override
@@ -116,7 +119,7 @@ public class MessageListFragment extends ListFragment {
 
 		// Notify the active callbacks interface (the activity, if the
 		// fragment is attached to one) that an item has been selected.
-		mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+//		mCallbacks.onItemSelected((Message)listView.getItemAtPosition(position));
 	}
 
 	@Override
@@ -149,4 +152,19 @@ public class MessageListFragment extends ListFragment {
 
 		mActivatedPosition = position;
 	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		getListView().setStackFromBottom(true);
+		getListView().setItemsCanFocus(false);
+	}
+	
+	public void addMessage(Message message) {
+		if (mAdapter != null) {
+			mAdapter.add(message);
+			mAdapter.notifyDataSetChanged();
+		}
+	}
+	
 }

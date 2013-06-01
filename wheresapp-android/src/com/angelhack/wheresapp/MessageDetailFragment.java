@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.angelhack.wheresapp.model.DummyContent;
+import com.angelhack.wheresapp.model.Message;
 
 /**
  * A fragment representing a single Message detail screen. This fragment is
@@ -24,7 +24,7 @@ public class MessageDetailFragment extends Fragment {
 	/**
 	 * The dummy content this fragment is presenting.
 	 */
-	private DummyContent.DummyItem mItem;
+	private Message mItem;
 
 	/**
 	 * Mandatory empty constructor for the fragment manager to instantiate the
@@ -41,8 +41,7 @@ public class MessageDetailFragment extends Fragment {
 			// Load the dummy content specified by the fragment
 			// arguments. In a real-world scenario, use a Loader
 			// to load content from a content provider.
-			mItem = DummyContent.ITEM_MAP.get(getArguments().getString(
-					ARG_ITEM_ID));
+			mItem = getArguments().getParcelable(ARG_ITEM_ID);
 		}
 	}
 
@@ -54,8 +53,7 @@ public class MessageDetailFragment extends Fragment {
 
 		// Show the dummy content as text in a TextView.
 		if (mItem != null) {
-			((TextView) rootView.findViewById(R.id.message_detail))
-					.setText(mItem.content);
+			((TextView) rootView.findViewById(R.id.message_detail)).setText(mItem.message);
 		}
 
 		return rootView;

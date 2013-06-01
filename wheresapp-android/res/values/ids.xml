@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+    <item name="content_container" format="string" type="id"/>
+    <item name="chat_container" format="string" type="id"/>
+
+</resources>
