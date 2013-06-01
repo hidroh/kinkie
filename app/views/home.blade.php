@@ -11,6 +11,13 @@
 		
 	</div>
 	
+	<script>
+		if(!("WebSocket" in window)) {
+			$('button').text('Unfortunately, your device is not supported! :(');
+			$('button').attr('disabled', 'disabled');
+		}
+	</script>
+	
 @stop
 
 
