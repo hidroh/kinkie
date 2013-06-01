@@ -11,5 +11,7 @@ class Messages extends Eloquent {
 	 * @var string
 	 */
 	protected $table = 'messages';
+	
+	public $timestamps = false;
 
 }

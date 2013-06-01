@@ -20,7 +20,7 @@ class CreateMessagesTable extends Migration {
             $table->decimal('latitude',5,2);
             $table->decimal('longitude',5,2);
             $table->string('message');
-            $table->timestamps();
+            $table->timestamp('created');
         });
 	}
 
