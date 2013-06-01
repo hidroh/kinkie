@@ -41,8 +41,8 @@
             };
 
             conn.onmessage = function(e) {
-                e = JSON.parse(e);
-                addMessage(e.message);
+                e = JSON.parse(e.data);
+                addMessage(e.message, null, e.image);
             }
 
             conn.onerror = function(e) {
@@ -51,17 +51,20 @@
             }
         }
 
-        function addMessage(e, conn) {
+        function addMessage(e, conn, image) {
             var user = JSON.parse($.cookie('user'));
             var message = {
                 "type": 'message',
-                "userid": user.id,
-                "lat": lat,
-                "lon": lon,
-                "message": e
+                "user_id": user.id,
+                "latitude": lat,
+                "longitude": lon,
+                "message": e,
+                "image": image || user.image
             }
 
-            e = e.replace(/\s+/, '');
+            var image = image || user.image;
+
+            e = e.replace(/^\s+|\s+$/g, '');
             if (e == '') {
                 $('.textbox #text').val('');
                 return;
@@ -73,19 +76,19 @@
 
             var p = $('<p/>').text(e);
             var text = $('<div/>').addClass('text').append(p);
-            var avatar = $('<div/>').addClass('avatar').css('backgroundImage', "url('" + user.image + "')");
+            var avatar = $('<div/>').addClass('avatar').css('backgroundImage', "url('" + image + "')");
             var away = $('<div/>').addClass('away').text('32m away');
             var div = $('<div />').addClass('message').append(text).append(avatar).append(away);
             $('#messagebox').append(div);
             $('.message').addClass('show');
 
             // smilies
-            e = p.text();
-            e = e.replace(':)', '<i class="icon icon-smile"></i>');
-            e = e.replace(':|', '<i class="icon icon-meh"></i>');
-            e = e.replace(':(', '<i class="icon icon-frown"></i>');
-            e = e.replace('<3', '<i class="icon icon-heart"></i>');
-            e = e.replace('(y)', '<i class="icon icon-hand-right"></i>');
+            e = p.text().replace(/(<([^>]+)>)/ig,"");
+            e = e.replace(/\:\)/g, '<i class="icon icon-smile"></i>');
+            e = e.replace(/\:\|/g, '<i class="icon icon-meh"></i>');
+            e = e.replace(/\:\(/g, '<i class="icon icon-frown"></i>');
+            e = e.replace(/\<3/g, '<i class="icon icon-heart"></i>');
+            e = e.replace(/\(y\)/g, '<i class="icon icon-hand-right"></i>');
 
             p.html(e);
             
@@ -94,6 +97,7 @@
                 div.addClass('mine');
             }
             $("html, body").animate({ scrollTop: $(document).height() }, 200);
+            $('.textbox #text').val('');
         }
     </script>
 
