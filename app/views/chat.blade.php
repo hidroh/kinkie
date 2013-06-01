@@ -54,7 +54,7 @@
 					addMessage(e.message, null, e.image, e.latitude, e.longitude, e.user_id);
 				} else if(e.type == 'info') {
 					$('#topinfo').show();
-					$('#topinfo span').text('Message reached ' . e.message . ' people');
+					$('#topinfo span').text('Message reached ' + e.message + ' people');
 				}
             }
 
