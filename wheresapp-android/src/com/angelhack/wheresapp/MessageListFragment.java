@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.angelhack.wheresapp.dummy.DummyContent;
+import com.angelhack.wheresapp.model.DummyContent;
 
 /**
  * A list fragment representing a list of Messages. This fragment also supports

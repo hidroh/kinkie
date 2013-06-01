@@ -1,4 +1,4 @@
-package com.angelhack.wheresapp.dummy;
+package com.angelhack.wheresapp.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;

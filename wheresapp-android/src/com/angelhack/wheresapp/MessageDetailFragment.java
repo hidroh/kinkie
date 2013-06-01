@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.angelhack.wheresapp.dummy.DummyContent;
+import com.angelhack.wheresapp.model.DummyContent;
 
 /**
  * A fragment representing a single Message detail screen. This fragment is

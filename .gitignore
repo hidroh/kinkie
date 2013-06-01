@@ -3,3 +3,8 @@
 composer.phar
 composer.lock
 .DS_Store
+.project
+.classpath
+.settings/
+bin/
+gen/
