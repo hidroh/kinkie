@@ -52,11 +52,19 @@
         }
 
         function addMessage(e, conn) {
+            var user = JSON.parse($.cookie('user'));
             var message = {
                 "type": 'message',
+                "userid": user.id,
                 "lat": lat,
                 "lon": lon,
                 "message": e
+            }
+
+            e = e.replace(/\s+/, '');
+            if (e == '') {
+                $('.textbox #text').val('');
+                return;
             }
 
             $('#noone').fadeOut(function() {
@@ -65,13 +73,27 @@
 
             var p = $('<p/>').text(e);
             var text = $('<div/>').addClass('text').append(p);
-            var avatar = $('<div/>').addClass('avatar');
+            var avatar = $('<div/>').addClass('avatar').css('backgroundImage', "url('" + user.image + "')");
             var away = $('<div/>').addClass('away').text('32m away');
             var div = $('<div />').addClass('message').append(text).append(avatar).append(away);
             $('#messagebox').append(div);
             $('.message').addClass('show');
+
+            // smilies
+            e = p.text();
+            e = e.replace(':)', '<i class="icon icon-smile"></i>');
+            e = e.replace(':|', '<i class="icon icon-meh"></i>');
+            e = e.replace(':(', '<i class="icon icon-frown"></i>');
+            e = e.replace('<3', '<i class="icon icon-heart"></i>');
+            e = e.replace('(y)', '<i class="icon icon-hand-right"></i>');
+
+            p.html(e);
             
-            if (conn) conn.send(JSON.stringify(message));
+            if (conn) {
+                conn.send(JSON.stringify(message));
+                div.addClass('mine');
+            }
+            $("html, body").animate({ scrollTop: $(document).height() }, 200);
         }
     </script>
 
