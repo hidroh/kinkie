@@ -23,8 +23,8 @@ class ChatController implements MessageComponentInterface {
         if (!$msgArray) {
             $this->forgetUser($from);
         } else {
-            $isNewUser = $this->rememberUser($from, $msgArray['user_id']);
-            if ($isNewUser) {
+            $isNewConnection = $this->rememberUser($from, $msgArray['user_id']);
+            if ($isNewConnection) {
                 $this->retrieveMessages($from, $msgArray['latitude'], $msgArray['longitude']);
             }
 
@@ -45,27 +45,31 @@ class ChatController implements MessageComponentInterface {
     }
 
     private function rememberUser($conn, $userid) {
-        if (!$this->users[$conn]) {
-            echo "Remembering connection {$conn->resourceId} with user_id {$userid}\n";
-            $this->connections[$userid] = $conn;
-            $this->users[$conn] = $userid;
-            return true;
+        echo "Remembering connection {$conn->resourceId} with user_id {$userid}\n";
+        $isNewUser = !array_key_exists($userid, $this->connections);
+        if ($isNewUser) {
+            $this->connections[$userid] = new \SplObjectStorage;
         }
 
-        return false;
+        $isNewConnection = !$this->connections[$userid]->contains($conn);
+        if ($isNewConnection) {
+            $this->connections[$userid]->attach($conn);
+            $this->users[$conn] = $userid;
+        }
+        return $isNewConnection;
     }
 
     private function forgetUser($conn) {
-        echo "Forgetting connection {$conn->resourceId} with user_id {$this->connections[$conn]}\n";
-        unset($this->connections[$this->users[$conn]]);
+        echo "Forgetting connection {$conn->resourceId} with user_id {$this->users[$conn]}\n";
+        $this->connections[$this->users[$conn]]->detach($conn);
         unset($this->users[$conn]);
         $this->users->detach($conn);
     }
 
-    private function getConnectionByUserId($userid) {
+    private function getConnectionsByUserId($userid) {
         echo "Getting active connection for {$userid}\n";
         if (array_key_exists($userid, $this->connections)) {
-            echo "Found connection {$this->connections[$userid]->resourceId}\n";
+            echo "Found {$this->connections[$userid]->count()} connections\n";
             return $this->connections[$userid];
         }
 
@@ -76,13 +80,15 @@ class ChatController implements MessageComponentInterface {
         $users = $this->retrieveUsers($msgArray['latitude'], $msgArray['longitude']);
         $count = 0;
         foreach ($users as $user) {
-            $connection = $this->getConnectionByUserId($user->user_id);
-            if ($connection && $from !== $connection) {
-                // The sender is not the receiver, send to each connection connected
-                echo "Sending message to connection {$connection->resourceId} with user_id {$user->user_id}\n";
-                // var_dump($msgArray);echo "\n";
-                $connection->send(json_encode($msgArray));
-                $count++;
+            $connections = $this->getConnectionsByUserId($user->user_id);
+            foreach ($connections as $connection) {
+                if ($connection && $from !== $connection) {
+                    // The sender is not the receiver, send to each connection connected
+                    echo "Sending message to connection {$connection->resourceId} with user_id {$user->user_id}\n";
+                    // var_dump($msgArray);echo "\n";
+                    $connection->send(json_encode($msgArray));
+                    $count++;
+                }
             }
         }
 
