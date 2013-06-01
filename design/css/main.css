@@ -47,6 +47,10 @@ body {
     background: #1abc9c;
 }
 
+.textbox .btn:disabled {
+
+}
+
 .message {
     position: relative;
     width: 100%;
@@ -96,6 +100,14 @@ body {
 .message.mine .avatar {
     left: auto;
     right: 10px;
+}
+
+#lockmein {
+    -webkit-transitions: all ease-in-out 0.2s;
+}
+
+#lockmein.locked {
+    background: #c0392b;
 }
 
 .btn {
