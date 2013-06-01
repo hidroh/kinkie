@@ -16,6 +16,11 @@ Route::get('/', function()
 	return View::make('home');
 });
 
+Route::get('/select', function()
+{
+	return View::make('select');
+});
+
 Route::get('/join', function()
 {
 	return View::make('join');
