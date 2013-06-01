@@ -2,6 +2,7 @@
 
 @section('content')
 	
+<script src="http://maps.google.com/maps/api/js?sensor=true&libraries=geometry"></script>
 <div class="join-screen page">
 
     <script type="text/javascript">

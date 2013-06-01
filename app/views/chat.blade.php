@@ -2,6 +2,7 @@
 
 @section('content')
 <script src="/js/vendor/jquery.textarea-expander.js"></script>
+<script src="http://maps.google.com/maps/api/js?sensor=true&libraries=geometry"></script>
 
 <div class="chat-screen page">
     <script>
@@ -51,7 +52,7 @@
             }
         }
 
-        function addMessage(e, conn, image) {
+        function addMessage(e, conn, image, lat2, lon2) {
             var user = JSON.parse($.cookie('user'));
             var message = {
                 "type": 'message',
@@ -60,6 +61,14 @@
                 "longitude": lon,
                 "message": e,
                 "image": image || user.image
+            }
+
+            var dist = 0;
+            if (conn) {
+                var from = new google.maps.LatLng(lat, lon);
+                var to   = new google.maps.LatLng(lat2, lon2);
+                dist = google.maps.geometry.spherical.computeDistanceBetween(from, to);
+                console.log(dist);
             }
 
             var image = image || user.image;

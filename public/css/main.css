@@ -65,6 +65,7 @@ body {
     width: 100%;
     padding-left: 60px;
     margin-bottom: 20px;
+    min-height: 70px;
     -webkit-transition: all 800ms cubic-bezier(0.230, 1.000, 0.320, 1.000) 0ms;
 }
 
@@ -86,6 +87,7 @@ body {
     left: 10px;
     height: 50px;
     width: 50px;
+    margin-top: -10px;
     border-radius: 50px;
     background: #333333;
     background-image: url('https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash4/623558_1341034136_1348247499_q.jpg');
