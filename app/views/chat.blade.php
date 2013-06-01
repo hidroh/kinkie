@@ -8,6 +8,7 @@
     <script>
         var wsuri = "ws://54.251.109.177:80";
         var lat, lon;
+        var lastMessage;
 
         window.onload = function() {
             navigator.geolocation.getCurrentPosition(function(position) {
@@ -43,7 +44,7 @@
 
             conn.onmessage = function(e) {
                 e = JSON.parse(e.data);
-                addMessage(e.message, null, e.image);
+                addMessage(e.message, null, e.image, e.latitude, e.longitude);
             }
 
             conn.onerror = function(e) {
@@ -52,7 +53,7 @@
             }
         }
 
-        function addMessage(e, conn, image, lat2, lon2) {
+        function addMessage(e, conn, image, lat2, lon2, userid) {
             var user = JSON.parse($.cookie('user'));
             var message = {
                 "type": 'message',
@@ -63,13 +64,7 @@
                 "image": image || user.image
             }
 
-            var dist = 0;
-            if (conn == null) {
-                var from = new google.maps.LatLng(lat, lon);
-                var to   = new google.maps.LatLng(lat2, lon2);
-                dist = google.maps.geometry.spherical.computeDistanceBetween(from, to);
-                console.log(dist);
-            }
+            userid = userid || user.id;
 
             var image = image || user.image;
 
@@ -83,12 +78,21 @@
                 $(this).remove();
             });
 
-            var p = $('<p/>').text(e);
-            var text = $('<div/>').addClass('text').append(p);
-            var avatar = $('<div/>').addClass('avatar').css('backgroundImage', "url('" + image + "')");
-            var away = $('<div/>').addClass('away').text('32m away');
-            var div = $('<div />').addClass('message').append(text).append(avatar).append(away);
-            $('#messagebox').append(div);
+                var p = $('<p/>').text(e);
+
+                var text = $('<div/>').addClass('text').append(p);
+                var avatar = $('<div/>').addClass('avatar').css('backgroundImage', "url('" + image + "')");
+                var away = $('<div/>').addClass('away');
+                var dist = 0;
+                if (conn == null && lat2 && lon2) {
+                    var from = new google.maps.LatLng(lat, lon);
+                    var to   = new google.maps.LatLng(lat2, lon2);
+                    dist = google.maps.geometry.spherical.computeDistanceBetween(from, to);
+                    $(away).text(dist.toFixed(2) + 'm away');
+                }
+                var div = $('<div />').addClass('message').append(text).append(avatar).append(away);
+                $('#messagebox').append(div);
+
             $('.message').addClass('show');
 
             // smilies
@@ -100,6 +104,9 @@
             e = e.replace(/\(y\)/g, '<i class="icon icon-hand-right"></i>');
 
             p.html(e);
+
+
+
             
             if (conn) {
                 conn.send(JSON.stringify(message));
@@ -107,6 +114,8 @@
             }
             $("html, body").animate({ scrollTop: $(document).height() }, 200);
             $('.textbox #text').val('');
+
+            lastMessage = userid;
         }
     </script>
 
