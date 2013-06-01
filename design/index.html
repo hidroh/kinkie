@@ -85,10 +85,53 @@
 </div-->
 
 <div class="chat-screen page">
-    <script src="http://autobahn.s3.amazonaws.com/js/autobahn.min.js"></script>
+    
     <script>
+	
+// WAMP session object
+var sess;
+var wsuri = "ws://localhost:8080";
+ 
+window.onload = function() {
+	
+	var conn = new WebSocket(wsuri);
+	conn.onopen = function(e) {
+		console.log("Connection established!");
+		conn.send('Hello World!');
+	};
+}
+	/*
+   // connect to WAMP server
+   ab.connect(wsuri,
+ 
+      // WAMP session was established
+      function (session) {
+ 
+         sess = session;
+         console.log("Connected to " + wsuri);
+ 
+         // subscribe to topic, providing an event handler
+         sess.subscribe("hello", onEvent);
+      },
+ 
+      // WAMP session is gone
+      function (code, reason) {
+ 
+         sess = null;
+         console.log("Connection lost (" + reason + ")");
+      }
+   );
+};
+ 
+function onEvent(topic, event) {
+   console.log(topic);
+   console.log(event);
+}
+
+*/
+ 	/*
         var conn = new ab.Session(
-            'ws://54.251.109.177/:8080',
+            'ws://54.251.109.177:8080/',
             function() {            // Once the connection has been established
                 conn.subscribe('kittensCategory', function(topic, data) {
                     // This is where you would add the new article to the DOM (beyond the scope of this tutorial)
@@ -100,6 +143,7 @@
                 'skipSubprotocolCheck': true
             }
         );
+		*/
     </script>
 
     <a href="" class="btn" style="position:fixed;top:10px;right:10px;z-index:100;">I wanna stay here <i class="icon-unlock-alt"></i></a>
