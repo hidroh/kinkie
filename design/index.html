@@ -46,7 +46,7 @@
 
 </div-->
 
-<div class="join-screen page">
+<!--div class="join-screen page">
 
     <div style="text-align:center;position:relative;margin-top:-200px;height:400px;top:50%;width:300px;left:50%;margin-left:-150px;">
         <h1 style="color:#ffffff;">Welcome</h1>
@@ -62,8 +62,146 @@
         <p><button class="btn" style="background:#f1c40f;color:#2c3e50;">Jump in!</button></p>
     </div>    
 
+</div-->
+
+<div class="map-screen page">
+    <div id="map-canvas" style="height:100%;position:relative;top:0;left:0;width:100%;"></div>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script>
+        var map;
+        function initialize() {
+          var mapOptions = {
+            zoom: 8,
+            center: new google.maps.LatLng(-34.397, 150.644),
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            disableDefaultUI: true
+          };
+          map = new google.maps.Map(document.getElementById('map-canvas'),
+              mapOptions);
+        }
+
+        google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
 </div>
 
+<!--div class="chat-screen page">
+
+    <a href="" class="btn" style="position:fixed;top:10px;right:10px;z-index:100;">Lock me in <i class="icon-unlock-alt"></i></a>
+
+    <div id="messagebox" style="width:100%;position:absolute;padding-bottom:57px;background:#E8E5E4;">
+
+        <div class="message">
+            <div class="text" style="">
+                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem.</p>
+            </div>
+            <div class="avatar"></div>
+            <div class="away">32m away</div>
+        </div>
+        <div class="message mine">
+            <div class="text" style="">
+                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id</p>
+            </div>
+            <div class="avatar"></div>
+            <div class="away">32m away</div>
+        </div>
+        <div class="message">
+            <div class="text" style="">
+                <p>accumsan porta arcu et pulvinar.</p>
+                <p>accumsan porta arcu et pulvinar.</p>
+            </div>
+            <div class="avatar"></div>
+            <div class="away">32m away</div>
+        </div>
+        <div class="message">
+            <div class="text" style="">
+                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem. Vestibulum ante ipsum primis</p>
+            </div>
+            <div class="avatar"></div>
+            <div class="away">32m away</div>
+        </div>
+        <div class="message">
+            <div class="text" style="">
+                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; </p>
+            </div>
+            <div class="avatar"></div>
+            <div class="away">32m away</div>
+        </div>
+        <div class="message">
+            <div class="text" style="">
+                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem.</p>
+            </div>
+            <div class="avatar"></div>
+            <div class="away">32m away</div>
+        </div>
+        <div class="message mine">
+            <div class="text" style="">
+                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id</p>
+            </div>
+            <div class="avatar"></div>
+            <div class="away">32m away</div>
+        </div>
+        <div class="message">
+            <div class="text" style="">
+                <p>accumsan porta arcu et pulvinar.</p>
+                <p>accumsan porta arcu et pulvinar.</p>
+            </div>
+            <div class="avatar"></div>
+            <div class="away">32m away</div>
+        </div>
+        <div class="message">
+            <div class="text" style="">
+                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem. Vestibulum ante ipsum primis</p>
+            </div>
+            <div class="avatar"></div>
+            <div class="away">32m away</div>
+        </div>
+        <div class="message">
+            <div class="text" style="">
+                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; </p>
+            </div>
+            <div class="avatar"></div>
+        </div>
+        <div class="message">
+            <div class="text" style="">
+                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem.</p>
+            </div>
+            <div class="avatar"></div>
+        </div>
+        <div class="message mine">
+            <div class="text" style="">
+                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id</p>
+            </div>
+            <div class="avatar"></div>
+        </div>
+        <div class="message">
+            <div class="text" style="">
+                <p>accumsan porta arcu et pulvinar.</p>
+                <p>accumsan porta arcu et pulvinar.</p>
+            </div>
+            <div class="avatar"></div>
+        </div>
+        <div class="message">
+            <div class="text" style="">
+                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem. Vestibulum ante ipsum primis</p>
+            </div>
+            <div class="avatar"></div>
+        </div>
+        <div class="message">
+            <div class="text" style="">
+                <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; </p>
+            </div>
+            <div class="avatar"></div>
+        </div>
+
+    </div>
+
+    <div class="textbox" style="bottom:0;width:100%;left:0;height:50px;">
+        <button class="btn" style="position:absolute;top:0;left:0;width:50px;margin:10px;font-size:20px;"><i class="icon-smile"></i></button>
+        <input type="text" placeholder="Brainfart goes here..." style="margin:10px 20px;">
+        <button class="btn" style="position:absolute;top:0;right:0;width:90px;margin:10px;">Send <i class="icon-rocket"></i></button>
+    </div>
+
+</div-->
 
 
 </body>

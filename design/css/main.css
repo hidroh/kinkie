@@ -1,5 +1,6 @@
 body {
-    font-weight: 300;
+    font-weight: 200;
+    font-family: 'Roboto', arial, sans-serif;
 }
 
 .page {
@@ -16,6 +17,75 @@ body {
 
 .join-screen {
     background: #c0392b;
+}
+
+.textbox {
+    position: fixed;
+    background: #ecf0f1;
+    padding-left: 50px;
+    padding-right: 130px;
+    border-top: 1px solid #d0d0d0;
+}
+
+.textbox input[type=text] {
+    width: 100%;
+}
+
+.textbox .btn {
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    border: 0;
+    background: #1abc9c;
+}
+
+.message {
+    position: relative;
+    width: 100%;
+    padding-left: 60px;
+    margin-bottom: 20px;
+    -webkit-transition: all 800ms cubic-bezier(0.230, 1.000, 0.320, 1.000) 0ms;
+}
+
+.message .text {
+    margin: 10px 20px;
+    background: #ffffff;
+    min-height: 40px;
+    padding: 10px;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+.message .avatar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    height: 50px;
+    width: 50px;
+    border-radius: 50px;
+    background: #333333;
+    background-image: url('https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash4/623558_1341034136_1348247499_q.jpg');
+}
+
+.message .away {
+    position: absolute;
+    top: 60px;
+    left: 10px;
+    font-size: 9px;
+    width: 50px;
+    text-align: center;
+}
+
+.message.mine .away {
+    left: auto;
+    right: 10px;
+}
+
+.message.mine {
+    padding-left: 0;
+    padding-right: 60px;
+}
+
+.message.mine .avatar {
+    left: auto;
+    right: 10px;
 }
 
 .btn {
