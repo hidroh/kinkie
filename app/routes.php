@@ -25,3 +25,8 @@ Route::get('/join', function()
 {
 	return View::make('join');
 });
+
+Route::get('/chat', function()
+{
+    return View::make('chat');
+});
