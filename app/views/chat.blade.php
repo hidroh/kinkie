@@ -29,10 +29,15 @@
                     }
                 }).keypress(function(e) {
                     var text = $(this).val();
-                    if ((e.which == 13 && !e.shiftKey) && text) {
+                    if (e.which == 13 && text) {
                         addMessage(text, conn);
                         $('.textbox #text').val('');
-                    }
+						e.preventDefault(true);
+						return;	
+                    } else if(e.which == 13) {
+						e.preventDefault(true);
+						return;
+					}
                 });
 
                 $('.btn.send').click(function() {
@@ -44,7 +49,10 @@
 
             conn.onmessage = function(e) {
                 e = JSON.parse(e.data);
-                addMessage(e.message, null, e.image, e.latitude, e.longitude);
+				
+				if(e.type == 'message') {
+					addMessage(e.message, null, e.image, e.latitude, e.longitude);
+				}
             }
 
             conn.onerror = function(e) {
