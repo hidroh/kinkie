@@ -108,7 +108,7 @@ window.fbAsyncInit = function() {
     <div style="text-align:center;position:relative;margin-top:-200px;height:400px;top:50%;width:300px;left:50%;margin-left:-150px;">
         <h1 style="color:#ffffff;">Kinkie!</h1>
         <p style="color:#ffffff;">Go on.. choose one</p>
-        <div style="margin-top:0px;">
+        <div style="margin-top:30px;">
             <div style="width:100%;float:left;text-align:center;">
                 <div id="fb" style="background:#2c3e50;display:inline-block;padding:35px 30px;width:130px;border-radius:100px;">
                     <a href="/join"><i style="font-size:60px;color:#3498db;" class="icon-facebook"></i></a>

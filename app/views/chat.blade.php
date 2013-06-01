@@ -219,7 +219,7 @@
         </div>
         <div class="textbar">
             <button class="btn smily" style="position:absolute;top:0;left:0;width:50px;margin:10px;font-size:20px;"><i class="icon-smile"></i></button>
-            <textarea id="text" placeholder="Your brainwords go here..." style="margin:10px 20px;min-height:32px;height:32px;"></textarea>
+            <textarea id="text" placeholder="Your brainwords go here..." style="margin:10px 20px;min-height:32px;height:32px;padding:6px 9px !important;"></textarea>
             <button class="btn send" disabled style="position:absolute;top:0;right:0;width:90px;margin:10px;">Send <i class="icon-rocket"></i></button>
         </div>
     </div>

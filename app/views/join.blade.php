@@ -9,6 +9,10 @@
             var user = JSON.parse($.cookie('user'));
             $('#image').css('backgroundImage', "url('" + user.image + "')").find('i').css('opacity', '0');
             $('#name').text(user.name);
+
+            $('.goto').click(function() {
+                window.location.href = '/chat';
+            });
         });
     </script>
 	
@@ -21,9 +25,9 @@
                 </div>
             </div>
         </div>
-        <h3 style="color:#ffffff;" id="name">Nico Hiort af Ornas</h3>
+        <h3 style="color:#ffffff;" id="name">Doctor Manhattan</h3>
         <p style="color:#ffffff;">By clicking the button below, you agree to the non-existent privacy policy we have.</p>
-        <p><button class="btn" style="background:#f1c40f;color:#2c3e50;">Jump in!</button></p>
+        <p><button class="goto btn" style="background:#f1c40f;color:#2c3e50;">Jump in!</button></p>
     </div>    
 	
 </div>
