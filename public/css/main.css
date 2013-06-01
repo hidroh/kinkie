@@ -28,12 +28,20 @@ body {
 }
 
 .textbox {
+    bottom: 0;
+    width: 100%;
+    left: 0;
     position: fixed;
+}
+
+.textbox .textbar {
+    position: relative;
+    width: 100%;
     background: #ecf0f1;
-    padding-left: 50px;
-    padding-right: 130px;
     border-top: 1px solid #d0d0d0;
     box-shadow: 0 -25px 25px #E8E5E4;
+    padding-left: 50px;
+    padding-right: 130px;
 }
 
 .textbox textarea {
@@ -140,6 +148,24 @@ body {
 
 #lockmein.locked {
     background: #c0392b;
+}
+
+.smilies {
+    position: relative;
+    z-index: 1000;
+    padding: 10px;
+    width: 100%;
+}
+
+.smilies .btn {
+    position: relative;
+    left: -100%;
+    background: #27ae60;
+    -webkit-transition: all 0.5s cubic-bezier(0.61, 0.47, 0.33, 0.86);
+}
+
+.smilies.go .btn {
+    left: 0;
 }
 
 .btn {

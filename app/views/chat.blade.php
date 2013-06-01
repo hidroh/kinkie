@@ -1,23 +1,42 @@
 @extends('layout')
 
 @section('content')
+<script src="/js/vendor/jquery.textarea-expander.js"></script>
 
 <div class="chat-screen page">
-    <script src="http://autobahn.s3.amazonaws.com/js/autobahn.min.js"></script>
     <script>
-        var conn = new ab.Session(
-            'ws://54.251.109.177/:8080',
-            function() {            // Once the connection has been established
-                conn.subscribe('kittensCategory', function(topic, data) {
-                    // This is where you would add the new article to the DOM (beyond the scope of this tutorial)
-                    console.log('New article published to category "' + topic + '" : ' + data.title);
+        var wsuri = "ws://localhost:8080";
+         
+        window.onload = function() {
+            
+            var conn = new WebSocket(wsuri);
+            console.log(conn);
+            conn.onopen = function(e) {
+                console.log("Connection established!");
+                conn.send('Hello World!');
+
+                // send a message
+                $('.textbox textarea').keypress(function() {
+                    console.log($(this).val())
+                    if ($(this).val() != '') {
+                        $('.send').attr('disabled', false);
+                    } else {
+                        $('.send').attr('disabled', true);
+                    }
                 });
-            }, function() {            // When the connection is closed
-                console.warn('WebSocket connection closed');
-            }, {                       // Additional parameters, we're ignoring the WAMP sub-protocol for older browsers
-                'skipSubprotocolCheck': true
+
+                $('.btn.send').click(function() {
+                    console.log('hey')
+                    var text = $('.textbox #text').val();
+                    conn.send(text);
+                });
+            };
+
+            conn.onerror = function(e) {
+                $('.textbox > *').attr('disabled');
+                $('#noone').html('We couldn\'t reach anyone <i class="icon-frown"></i>');
             }
-        );
+        }
     </script>
 
     <a id="lockmein" href="javascript:;" class="btn" style="position:fixed;top:10px;right:10px;z-index:100;"><span>I wanna stay here</span> <i class="icon-unlock-alt"></i></a>
@@ -131,10 +150,20 @@
 
     </div>
 
-    <div class="textbox" style="bottom:0;width:100%;left:0;height:50px;">
-        <button class="btn" style="position:absolute;top:0;left:0;width:50px;margin:10px;font-size:20px;"><i class="icon-smile"></i></button>
-        <textarea placeholder="Your brainwords go here..." style="margin:10px 20px;min-height:32px;height:32px;"></textarea>
-        <button class="btn" disabled style="position:absolute;top:0;right:0;width:90px;margin:10px;">Send <i class="icon-rocket"></i></button>
+
+    <div class="textbox" >
+        <div class="smilies">
+            <button class="btn" data-smily=":)"><i class="icon-smile"></i></button>
+            <button class="btn" data-smily=":|"><i class="icon-meh"></i></button>
+            <button class="btn" data-smily=":("><i class="icon-frown"></i></button>
+            <button class="btn" data-smily="<3"><i class="icon-heart"></i></button>
+            <button class="btn" data-smily="(y)"><i class="icon-hand-right"></i></button>
+        </div>
+        <div class="textbar">
+            <button class="btn smily" style="position:absolute;top:0;left:0;width:50px;margin:10px;font-size:20px;"><i class="icon-smile"></i></button>
+            <textarea id="text" placeholder="Your brainwords go here..." style="margin:10px 20px;min-height:32px;height:32px;"></textarea>
+            <button class="btn send" disabled style="position:absolute;top:0;right:0;width:90px;margin:10px;">Send <i class="icon-rocket"></i></button>
+        </div>
     </div>
 
 </div>
@@ -148,6 +177,23 @@
             $('#noone').addClass('go');
         }
 
+        $('.textbox #text').TextAreaExpander(0, 60);
+
+        $('.btn.smily').click(function() {
+            if (!$('.smilies').hasClass('go')) {
+                $('.smilies').addClass('go');
+            } else {
+                $('.smilies').removeClass('go');
+            }
+        });
+
+        $('.smilies .btn').click(function() {
+            $('.btn.smily').click();
+            var text = $('.textbox #text').val();
+            var data = $(this).data('smily');
+            $('.textbox #text').val(text + ' ' + data);
+        });
+
         // lock
         $('#lockmein').click(function() {
             if (!$(this).hasClass('locked')) {
@@ -157,11 +203,6 @@
                 $(this).removeClass('locked').find('i').removeClass('icon-lock').addClass('icon-unlock-alt');
                 $(this).find('span').text('I wanna stay here');
             }
-        });
-
-        // send a message
-        $('.textbox textarea').keypress(function() {
-            
         });
     });
 </script>
