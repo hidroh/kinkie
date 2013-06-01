@@ -6,8 +6,13 @@
 <div class="chat-screen page">
     <script>
         var wsuri = "ws://54.251.109.177:80";
-         
+        var lat, lon;
+
         window.onload = function() {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                lat = position.coords.latitude;
+                lon = position.coords.longitude;
+            });
             
             var conn = new WebSocket(wsuri);
             conn.onopen = function(e) {
@@ -36,7 +41,8 @@
             };
 
             conn.onmessage = function(e) {
-                addMessage(e.data);
+                e = JSON.parse(e);
+                addMessage(e.message);
             }
 
             conn.onerror = function(e) {
@@ -46,10 +52,18 @@
         }
 
         function addMessage(e, conn) {
+            var message = {
+                "type": 'message',
+                "lat": lat,
+                "lon": lon,
+                "message": e
+            }
+
             $('#noone').fadeOut(function() {
                 $(this).remove();
             });
-            var p = "<p>" + e + "</p>";
+
+            var p = $('<p/>').text(e);
             var text = $('<div/>').addClass('text').append(p);
             var avatar = $('<div/>').addClass('avatar');
             var away = $('<div/>').addClass('away').text('32m away');
@@ -57,7 +71,7 @@
             $('#messagebox').append(div);
             $('.message').addClass('show');
             
-            if (conn) conn.send(e);
+            if (conn) conn.send(JSON.stringify(message));
         }
     </script>
 

@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="/css/main.css">
 
 <script src="/js/vendor/jquery-1.9.1.js"></script>
+<script src="/js/vendor/jquery.cookie.js"></script>
 <script src="/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 </head>
 <body>
