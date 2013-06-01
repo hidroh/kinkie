@@ -19,16 +19,26 @@ body {
     background: #c0392b;
 }
 
+.messagebox {
+    width: 100%;
+    position: absolute;
+    padding-bottom:57px;
+    background: #E8E5E4;
+    min-height: 100%;
+}
+
 .textbox {
     position: fixed;
     background: #ecf0f1;
     padding-left: 50px;
     padding-right: 130px;
     border-top: 1px solid #d0d0d0;
+    box-shadow: 0 -25px 25px #E8E5E4;
 }
 
-.textbox input[type=text] {
+.textbox textarea {
     width: 100%;
+    resize: none;
 }
 
 .textbox .btn {
