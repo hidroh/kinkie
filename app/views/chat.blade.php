@@ -86,20 +86,20 @@
                 $(this).remove();
             });
 
-                var p = $('<p/>').text(e);
+            var p = $('<p/>').text(e);
 
-                var text = $('<div/>').addClass('text').append(p);
-                var avatar = $('<div/>').addClass('avatar').css('backgroundImage', "url('" + image + "')");
-                var away = $('<div/>').addClass('away');
-                var dist = 0;
-                if (conn == null && lat2 && lon2) {
-                    var from = new google.maps.LatLng(lat, lon);
-                    var to   = new google.maps.LatLng(lat2, lon2);
-                    dist = google.maps.geometry.spherical.computeDistanceBetween(from, to);
-                    $(away).text(dist.toFixed(2) + 'm away');
-                }
-                var div = $('<div />').addClass('message').append(text).append(avatar).append(away);
-                $('#messagebox').append(div);
+            var text = $('<div/>').addClass('text').append(p);
+            var avatar = $('<div/>').addClass('avatar').css('backgroundImage', "url('" + image + "')");
+            var away = $('<div/>').addClass('away');
+            var dist = 0;
+            if (conn == null && lat2 && lon2) {
+                var from = new google.maps.LatLng(lat, lon);
+                var to   = new google.maps.LatLng(lat2, lon2);
+                dist = google.maps.geometry.spherical.computeDistanceBetween(from, to);
+                $(away).text(Math.ceil(dist) + 'm away');
+            }
+            var div = $('<div />').addClass('message').append(text).append(avatar).append(away);
+            $('#messagebox').append(div);
 
             $('.message').addClass('show');
 
