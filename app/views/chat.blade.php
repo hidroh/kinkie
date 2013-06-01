@@ -5,7 +5,7 @@
 
 <div class="chat-screen page">
     <script>
-        var wsuri = "ws://localhost:8080";
+        var wsuri = "ws://54.251.109.177:80";
          
         window.onload = function() {
             
@@ -20,18 +20,22 @@
                     } else {
                         $('.send').attr('disabled', true);
                     }
+                }).keypress(function(e) {
+                    var text = $(this).val();
+                    if ((e.which == 13 && !e.shiftKey) && text) {
+                        addMessage(text, conn);
+                        $('.textbox #text').val('');
+                    }
                 });
 
                 $('.btn.send').click(function() {
                     var text = $('.textbox #text').val();
+                    addMessage(text, conn);
                     $('.textbox #text').val('');
-                    conn.send(text);
-                    addMessage(text);
                 });
             };
 
             conn.onmessage = function(e) {
-                $('#noone').hide();
                 addMessage(e.data);
             }
 
@@ -41,7 +45,10 @@
             }
         }
 
-        function addMessage(e) {
+        function addMessage(e, conn) {
+            $('#noone').fadeOut(function() {
+                $(this).remove();
+            });
             var p = "<p>" + e + "</p>";
             var text = $('<div/>').addClass('text').append(p);
             var avatar = $('<div/>').addClass('avatar');
@@ -49,6 +56,8 @@
             var div = $('<div />').addClass('message').append(text).append(avatar).append(away);
             $('#messagebox').append(div);
             $('.message').addClass('show');
+            
+            if (conn) conn.send(e);
         }
     </script>
 
