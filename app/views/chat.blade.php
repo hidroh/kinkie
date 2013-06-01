@@ -10,14 +10,11 @@
         window.onload = function() {
             
             var conn = new WebSocket(wsuri);
-            console.log(conn);
             conn.onopen = function(e) {
                 console.log("Connection established!");
-                conn.send('Hello World!');
 
                 // send a message
                 $('.textbox textarea').keypress(function() {
-                    console.log($(this).val())
                     if ($(this).val() != '') {
                         $('.send').attr('disabled', false);
                     } else {
@@ -26,16 +23,32 @@
                 });
 
                 $('.btn.send').click(function() {
-                    console.log('hey')
                     var text = $('.textbox #text').val();
+                    $('.textbox #text').val('');
                     conn.send(text);
+                    addMessage(text);
                 });
             };
+
+            conn.onmessage = function(e) {
+                $('#noone').hide();
+                addMessage(e.data);
+            }
 
             conn.onerror = function(e) {
                 $('.textbox > *').attr('disabled');
                 $('#noone').html('We couldn\'t reach anyone <i class="icon-frown"></i>');
             }
+        }
+
+        function addMessage(e) {
+            var p = "<p>" + e + "</p>";
+            var text = $('<div/>').addClass('text').append(p);
+            var avatar = $('<div/>').addClass('avatar');
+            var away = $('<div/>').addClass('away').text('32m away');
+            var div = $('<div />').addClass('message').append(text).append(avatar).append(away);
+            $('#messagebox').append(div);
+            $('.message').addClass('show');
         }
     </script>
 
@@ -45,7 +58,7 @@
 
         <div id="noone" style="margin-top:-12px;position:absolute;width:100%;color:#c0c0c0;text-align:center;font-size:28px;">Yey! You're alone <i class="icon-meh"></i></div>
 
-        <div class="message">
+        <!--div class="message">
             <div class="text" style="">
                 <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem.</p>
             </div>
@@ -146,7 +159,7 @@
                 <p>accumsan porta arcu et pulvinar. Maecenas scelerisque eros in velit feugiat blandit. Donec id condimentum sem. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; </p>
             </div>
             <div class="avatar"></div>
-        </div>
+        </div-->
 
     </div>
 
