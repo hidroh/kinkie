@@ -52,6 +52,9 @@
 				
 				if(e.type == 'message') {
 					addMessage(e.message, null, e.image, e.latitude, e.longitude, e.user_id);
+				} else if(e.type == 'info') {
+					$('#topinfo').show();
+					$('#topinfo span').text('Message reached ' . e.message . ' people');
 				}
             }
 
@@ -134,6 +137,7 @@
     </script>
 
     <a id="lockmein" href="javascript:;" class="btn" style="position:fixed;top:10px;right:10px;z-index:100;"><span>I wanna stay here</span> <i class="icon-unlock-alt"></i></a>
+	<a id="topinfo" href="javascript:;" class="btn" style="position:fixed;top:10px;left:10px;z-index:100;display:none;"><i class="icon-info"></i> <span></span></a>
 
     <div id="messagebox">
 
