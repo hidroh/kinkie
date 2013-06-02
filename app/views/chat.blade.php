@@ -9,8 +9,14 @@
         var wsuri = "ws://54.251.109.177:80";
         var lat, lon;
         var lastMessage;
+        var watchId;
 
         window.onload = function() {
+            watchId = navigator.geolocation.watchPosition(function(position) {
+                lat = position.coords.latitude;
+                lon = position.coords.longitude;
+            }, function() {}, {timeout: 60000});
+
             navigator.geolocation.getCurrentPosition(function(position) {
                 lat = position.coords.latitude;
                 lon = position.coords.longitude;
@@ -51,10 +57,10 @@
                 e = JSON.parse(e.data);
 				
 				if(e.type == 'message') {
-					addMessage(e.message, null, e.image, e.latitude, e.longitude, e.user_id);
+					addMessage(e.message, null, e.image, e.latitude, e.longitude, e.user_id, e.gender);
 				} else if(e.type == 'info') {
 					$('#topinfo').show();
-					$('#topinfo span').text('Message reached ' + e.message + ' people');
+					setTimeout("$('#topinfo span').text(" + e.message + ").fadeOut(500)", 5000);
 				}
             }
 
@@ -64,7 +70,7 @@
             }
         }
 
-        function addMessage(e, conn, image, lat2, lon2, userid) {
+        function addMessage(e, conn, image, lat2, lon2, userid, gender) {
             var user = JSON.parse($.cookie('user'));
             var message = {
                 "type": 'message',
@@ -72,8 +78,11 @@
                 "latitude": lat,
                 "longitude": lon,
                 "message": e,
-                "image": image || user.image
+                "image": image || user.image,
+                "gender": gender || user.gender
             }
+
+            gender = gender || user.gender;
 
             userid = userid || user.id;
 
@@ -108,6 +117,8 @@
                 var div = $('<div />').addClass('message').append(text).append(avatar).append(away);
             }
 
+            div.addClass(gender);
+
             $('#messagebox').append(div);
 
             $('.message').addClass('show');
@@ -121,23 +132,20 @@
             e = e.replace(/\(y\)/g, '<i class="icon icon-hand-right"></i>');
 
             p.html(e);
-
-
-
             
             if (conn) {
                 conn.send(JSON.stringify(message));
                 div.addClass('mine');
             }
             $("html, body").animate({ scrollTop: $(document).height() }, 200);
-            $('.textbox #text').val('');
 
             lastMessage = userid;
         }
     </script>
 
-    <a id="lockmein" href="javascript:;" class="btn" style="position:fixed;top:10px;right:10px;z-index:100;"><span>I wanna stay here</span> <i class="icon-unlock-alt"></i></a>
-	<a id="topinfo" href="javascript:;" class="btn" style="position:fixed;top:10px;left:10px;z-index:100;display:none;"><i class="icon-info"></i> <span></span></a>
+    <p id="topinfo" style="font-size:11px;position:fixed;top:15px;left:10px;z-index:200;">Talking with <span>0</span> people right now.</p>
+
+    <a id="lockmein" href="javascript:;" class="btn" style="position:fixed;top:10px;right:10px;z-index:1000;"><span>Lock me in this position.</span> <i class="icon-unlock-alt"></i></a>
 
     <div id="messagebox">
 
@@ -191,16 +199,32 @@
 
         // lock
         $('#lockmein').click(function() {
+            $('#flash').fadeIn(100, function() { $(this).fadeOut(500); });
             if (!$(this).hasClass('locked')) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    lat = position.coords.latitude;
+                    lon = position.coords.longitude;
+                });
+                navigator.geolocation.clearWatch(watchId);
                 $(this).addClass('locked').find('i').removeClass('icon-unlock-alt').addClass('icon-lock');
-                $(this).find('span').text('I\'m staying here');
+                $(this).find('span').text('Get me out of here!');
             } else {
+                watchId = navigator.geolocation.watchPosition(function(position) {
+                    lat = position.coords.latitude;
+                    lon = position.coords.longitude;
+                }, function() {}, {timeout: 60000});
+
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    lat = position.coords.latitude;
+                    lon = position.coords.longitude;
+                });
                 $(this).removeClass('locked').find('i').removeClass('icon-lock').addClass('icon-unlock-alt');
-                $(this).find('span').text('I wanna stay here');
+                $(this).find('span').text('Lock me in this position.');
             }
         });
     });
 </script>
+<div id="flash"></div>
 
 @stop
 

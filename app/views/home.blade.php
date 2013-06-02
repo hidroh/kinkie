@@ -16,12 +16,12 @@
 		var noSocketSupport = false;
 		
 		if(!("WebSocket" in window)) {
-			$('button').text('Unfortunately, your device is not supported! :(');
+			$('button').text('Boo! Unsupported Phone :(');
 			$('button').attr('disabled', 'disabled');
 			noSocketSupport = true;
 		}
 		
-		$('button').text('We need to access your current location to enable chatting!');
+		$('button').text('We need to know where you are before starting a chat.');
 		$('button').attr('disabled', 'disabled');
 		
 		if(navigator.geolocation != null) {
