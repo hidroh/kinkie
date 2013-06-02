@@ -16,6 +16,10 @@
 <script src="/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 </head>
 <body>
+<!--
+we did not intend to make good code. we intend to make funny code. so we apologize for the
+unclean and super unprofessional work we had coded into this piece of....
+-->
 
 @yield('content')
 

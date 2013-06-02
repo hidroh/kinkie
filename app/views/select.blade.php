@@ -106,7 +106,8 @@ window.fbAsyncInit = function() {
 </script>
 
     <div style="text-align:center;position:relative;margin-top:-200px;height:400px;top:50%;width:300px;left:50%;margin-left:-150px;">
-        <h1 style="color:#ffffff;">Kinkie!</h1>
+        
+        <img src="/img/logo.png" alt="" style="width:250px;">
         <p style="color:#ffffff;">Go on.. choose one</p>
         <div style="margin-top:30px;">
             <div style="width:100%;float:left;text-align:center;">

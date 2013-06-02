@@ -71,7 +71,9 @@
                     $('#topinfo span').text(e.message);
 					setTimeout("$('#topinfo').fadeOut(500)", 5000);
 				} else if (e.type == 'new') {
-                    console.log(e.data);
+                    e.messages.forEach(function(f) {
+                        addMessage(f.message, null, f.image, f.latitude, f.longitude, f.user_id, f.gender);
+                    });
                 }
             }
 
@@ -150,11 +152,17 @@
             }
             $("html, body").animate({ scrollTop: $(document).height() }, 200);
 
+            prune();
+
             lastMessage = userid;
+        }
+
+        function prune() {
+
         }
     </script>
 
-    <p id="topinfo" style="font-size:11px;position:fixed;top:15px;left:10px;z-index:200;">Talking with <span>0</span> people right now.</p>
+    <p id="topinfo" class="btn btn-mini" style="font-size:11px;position:fixed;top:15px;left:10px;z-index:200;">Talking with <span>0</span> people right now.</p>
 
     <a id="lockmein" href="javascript:;" class="btn" style="display:none;position:fixed;top:10px;right:10px;z-index:1000;"><span>Lock me in this position.</span> <i class="icon-unlock-alt"></i></a>
 
@@ -165,7 +173,7 @@
     </div>
 
 
-    <div class="textbox" >
+    <div class="textbox">
         <div class="smilies">
             <button class="btn" data-smily=":)"><i class="icon-smile"></i></button>
             <button class="btn" data-smily=":|"><i class="icon-meh"></i></button>
