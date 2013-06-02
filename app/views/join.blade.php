@@ -28,7 +28,7 @@
         </div>
         <h3 style="color:#ffffff;" id="name">Doctor Manhattan</h3>
         <p style="color:#ffffff;">By clicking the button below, you agree to the non-existent privacy policy we have.</p>
-        <p><button class="goto btn" style="background:#f1c40f;color:#2c3e50;">Jump in!</button></p>
+        <p><button class="goto btn" style="background:#f1c40f;color:#2c3e50;">Get Kinky!</button></p>
     </div>    
 	
 </div>

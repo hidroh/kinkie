@@ -71,6 +71,7 @@
                     $('#topinfo span').text(e.message);
 					setTimeout("$('#topinfo').fadeOut(500)", 5000);
 				} else if (e.type == 'new') {
+                    console.log(e);
                     e.messages.forEach(function(f) {
                         addMessage(f.message, null, f.image, f.latitude, f.longitude, f.user_id, f.gender);
                     });
@@ -162,7 +163,7 @@
         }
     </script>
 
-    <p id="topinfo" class="btn btn-mini" style="font-size:11px;position:fixed;top:15px;left:10px;z-index:200;">Talking with <span>0</span> people right now.</p>
+    <p id="topinfo" class="btn btn-mini" style="display:none;font-size:11px;position:fixed;top:15px;left:10px;z-index:200;">Talking with <span>0</span> people right now.</p>
 
     <a id="lockmein" href="javascript:;" class="btn" style="display:none;position:fixed;top:10px;right:10px;z-index:1000;"><span>Lock me in this position.</span> <i class="icon-unlock-alt"></i></a>
 
@@ -183,8 +184,8 @@
         </div>
         <div class="textbar">
             <button class="btn smily" style="position:absolute;top:0;left:0;width:50px;margin:10px;font-size:20px;"><i class="icon-smile"></i></button>
-            <textarea id="text" placeholder="Your brainwords go here..." style="margin:10px 20px;min-height:32px;height:32px;padding:6px 9px !important;"></textarea>
-            <button class="btn send" disabled style="position:absolute;top:0;right:0;width:90px;margin:10px;">Send <i class="icon-heart"></i></button>
+            <textarea id="text" placeholder="Your kinky thoughts go here..." style="margin:10px 20px;min-height:32px;height:32px;padding:6px 9px !important;"></textarea>
+            <button class="btn send" style="position:absolute;top:0;right:0;width:90px;margin:10px;">Send <i class="icon-heart"></i></button>
         </div>
     </div>
 
