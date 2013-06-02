@@ -110,14 +110,18 @@ class ChatController implements MessageComponentInterface {
 
     private function retrieveUsers($lat, $long) {
         echo "Retrieving users nearby ({$lat}, {$long})\n";
-        $users = DB::table('messages')
-                    ->distinct()
-                    ->select('user_id')
-                    ->whereBetween('latitude', array($lat - 1, $lat + 1))
-                    ->whereBetween('longitude', array($long - 1, $long + 1))
-                    ->orderBy('id', 'desc')
-                    ->get();
 
+        // $users = DB::raw()
+        // $users = DB::table('messages')
+        //             ->distinct()
+        //             ->select('user_id')
+        //             ->whereBetween('latitude', array($lat - 1, $lat + 1))
+        //             ->whereBetween('longitude', array($long - 1, $long + 1))
+        //             ->orderBy('id', 'desc')
+        //             ->get();
+
+        $users = DB::select('select *,(6371* acos(cos(radians(?)) * cos(radians(latitude )) * cos(radians(longitude) - radians(?)) 
++ sin(radians(?)) * sin(radians(latitude)))) AS distance FROM messages where latitude = ? and longitude=? having distance<?' , array($lat,$long,$lat,$lat,$long,0.5));
         $userCount = count($users);
         echo "Found {$userCount} users\n";
         // var_dump($users);
