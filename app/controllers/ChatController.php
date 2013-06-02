@@ -67,10 +67,16 @@ class ChatController implements MessageComponentInterface {
 		}
 		
 		echo "Forgetting connection {$conn->resourceId} with user_id {$this->users[$conn]}\n";
-        $this->connections[$this->users[$conn]]->detach($conn);
+		
+		if($this->connections[$this->users[$conn]]->contains($conn)) {
+			$this->connections[$this->users[$conn]]->detach($conn);
+		}
         
 		unset($this->users[$conn]);
-        $this->users->detach($conn);
+		
+		if($this->users->contains($conn)) {
+			$this->users->detach($conn);
+		}
     }
 
     private function getConnectionsByUserId($userid) {
