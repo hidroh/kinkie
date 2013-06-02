@@ -41,6 +41,7 @@ class ChatController implements MessageComponentInterface {
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
         echo "An error has occurred: {$e->getMessage()}\n";
+		echo "-----------\n {$e->getTraceAsString()}\n-----------\n";
         $this->forgetUser($conn);
     }
 
@@ -60,9 +61,15 @@ class ChatController implements MessageComponentInterface {
     }
 
     private function forgetUser($conn) {
-        echo "Forgetting connection {$conn->resourceId} with user_id {$this->users[$conn]}\n";
+        
+		if(!isset($this->users[$conn])) {
+			return;
+		}
+		
+		echo "Forgetting connection {$conn->resourceId} with user_id {$this->users[$conn]}\n";
         $this->connections[$this->users[$conn]]->detach($conn);
-        unset($this->users[$conn]);
+        
+		unset($this->users[$conn]);
         $this->users->detach($conn);
     }
 
