@@ -172,7 +172,6 @@ class ChatController implements MessageComponentInterface {
 	if(!isset($msg['latitude'])) return null;
 	if(!isset($msg['longitude'])) return null;
 	if(!isset($msg['user_id'])) return null;
-	if(!isset($msg['message'])) return null;
         return $msg;
     }
 }
