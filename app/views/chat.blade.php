@@ -25,6 +25,14 @@
             var conn = new WebSocket(wsuri);
             conn.onopen = function(e) {
                 console.log("Connection established!");
+                var user = JSON.parse($.cookie('user'));
+                
+                conn.send(JSON.stringify({
+                    'type': 'new',
+                    'user_id': user.id,
+                    'latitude': lat,
+                    'longitude': lon
+                }));
 
                 // send a message
                 $('.textbox textarea').keypress(function() {
@@ -60,8 +68,11 @@
 					addMessage(e.message, null, e.image, e.latitude, e.longitude, e.user_id, e.gender);
 				} else if(e.type == 'info') {
 					$('#topinfo').show();
-					setTimeout("$('#topinfo span').text(" + e.message + ").fadeOut(500)", 5000);
-				}
+                    $('#topinfo span').text(e.message);
+					setTimeout("$('#topinfo').fadeOut(500)", 5000);
+				} else if (e.type == 'new') {
+
+                }
             }
 
             conn.onerror = function(e) {
@@ -145,7 +156,7 @@
 
     <p id="topinfo" style="font-size:11px;position:fixed;top:15px;left:10px;z-index:200;">Talking with <span>0</span> people right now.</p>
 
-    <a id="lockmein" href="javascript:;" class="btn" style="position:fixed;top:10px;right:10px;z-index:1000;"><span>Lock me in this position.</span> <i class="icon-unlock-alt"></i></a>
+    <a id="lockmein" href="javascript:;" class="btn" style="display:none;position:fixed;top:10px;right:10px;z-index:1000;"><span>Lock me in this position.</span> <i class="icon-unlock-alt"></i></a>
 
     <div id="messagebox">
 
