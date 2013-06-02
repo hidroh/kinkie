@@ -18,8 +18,8 @@ class CreateMessagesTable extends Migration {
             $table->string('user_id');
             $table->string('username');
             $table->string('gender');
-            $table->decimal('latitude',5,2);
-            $table->decimal('longitude',5,2);
+            $table->decimal('latitude',8,5);
+            $table->decimal('longitude',8,5);
             $table->string('message');
             $table->timestamp('created');
         });

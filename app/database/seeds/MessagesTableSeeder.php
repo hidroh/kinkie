@@ -13,56 +13,56 @@ class MessagesTableSeeder extends Seeder {
 		Messages::create(array(
 			'user_id' => '1',
 			'username' => 'bala',
-			'latitude' => 100.10,
-			'longitude' => 100.24,
+			'latitude' => 1.3567,
+			'longitude' => 103.8272,
 			'gender' => 'Male',
-			'message' => 'hello world',
+			'message' => '250m',
 			'created' => '2013-05-06 00:00:12'
 			));
 		Messages::create(array(
 			'user_id' => '2',
 			'username' => 'nico',
-			'latitude' => 101.40,
-			'longitude' => 100.24,
+			'latitude' => 1.3552,
+			'longitude' => 103.8260,
 			'gender' => 'Female',
-			'message' => 'finlander',
+			'message' => '300m',
 			'created' => '2013-04-06 00:00:12'
 			));
 		Messages::create(array(
 			'user_id' => '3',
 			'username' => 'jamoy',
-			'latitude' => 102.10,
-			'longitude' => 101.24,
+			'latitude' => 1.3545,
+			'longitude' => 103.8260,
 			'gender' => 'Male',
-			'message' => 'korean guy',
+			'message' => '400m',
 			'created' => '2013-05-03 01:00:12'
 			));
 		Messages::create(array(
 			'user_id' => '1',
 			'username' => 'bala',
-			'latitude' => 103.10,
-			'longitude' => 104.24,
+			'latitude' => 1.3517,
+			'longitude' => 103.8271,
 			'gender' => 'Male',
-			'message' => 'Indian guy',
+			'message' => '770m',
 			'created' => '2013-05-16 20:00:12'
 			));
 		Messages::create(array(
 			'user_id' => '4',
 			'username' => 'trung',
-			'latitude' => 100.10,
-			'longitude' => 106.24,
+			'latitude' => 1.3484,
+			'longitude' => 103.8274,
 			'gender' => 'Male',
-			'message' => 'vietnamese guy',
+			'message' => 'outside',
 			'created' => '2013-05-06 00:02:12'
 			));
 
 		Messages::create(array(
 			'user_id' => '5',
 			'username' => 'chien',
-			'latitude' => 101.50,
-			'longitude' => 102.24,
+			'latitude' => 1.3585,
+			'longitude' => 103.8255,
 			'gender' => 'Male',
-			'message' => 'vietnamese guy',
+			'message' => 'test point guy',
 			'created' => '2013-05-07 20:10:12'
 			));
 	}
