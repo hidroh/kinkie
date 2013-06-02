@@ -133,11 +133,12 @@ class ChatController implements MessageComponentInterface {
                     ->take(10)
                     ->get();
         if (($messageCount = count($messages)) > 0) {
-            echo "Sending {$messageCount} messages to connection {$connection->resourceId}\n";
+            echo "Packing {$messageCount} messages for connection {$connection->resourceId}\n";
+            $pastMessages = array();
             for ($i=$messageCount - 1; $i >= 0 ; $i--) { 
                 // var_dump($messages[$i]);echo "\n";
                 $msg = $messages[$i];
-                $json = json_encode(array(
+                array_push($pastMessages, array(
                     'user_id' => $msg->user_id,
                     'latitude' => $msg->latitude,
                     'longitude' => $msg->longitude,
@@ -145,8 +146,10 @@ class ChatController implements MessageComponentInterface {
                     'timestamp' =>$msg->created,
                     'image' => ''
                 ));
-                $connection->send($json);
             }
+
+            $json = json_encode(array('type' => 'new', 'messages' => $pastMessages));
+            $connection->send($json);
         }
     }
 
