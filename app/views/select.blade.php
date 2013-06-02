@@ -75,8 +75,8 @@ window.fbAsyncInit = function() {
                             "name": response.first_name + ' ' + response.last_name,
                             "gender": response.gender,
                             "image": "https://graph.facebook.com/" + response.id + "/picture",
-                            "lat": lat,
-                            "lon": lon
+                            "latitude": lat,
+                            "longitude": lon
                         }
                         conn.send(JSON.stringify(user));
                         $.cookie('user', JSON.stringify(user));
