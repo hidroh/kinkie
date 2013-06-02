@@ -68,7 +68,7 @@ class ChatController implements MessageComponentInterface {
 		
 		echo "Forgetting connection {$conn->resourceId} with user_id {$this->users[$conn]}\n";
 		
-		if($this->connections[$this->users[$conn]]->contains($conn)) {
+		if(isset($this->connections[$this->users[$conn]]) && $this->connections[$this->users[$conn]]->contains($conn)) {
 			$this->connections[$this->users[$conn]]->detach($conn);
 		}
         
@@ -86,7 +86,7 @@ class ChatController implements MessageComponentInterface {
             return $this->connections[$userid];
         }
 
-        return null;
+        return array();
     }
 
     private function forwardMessage($from, array $msgArray) {
@@ -162,6 +162,10 @@ class ChatController implements MessageComponentInterface {
 
     private function decodeJsonMessage($json) {
         $msg = json_decode($json, true);
+	if(!isset($msg['latitude'])) return null;
+	if(!isset($msg['longitude'])) return null;
+	if(!isset($msg['user_id'])) return null;
+	if(!isset($msg['message'])) return null;
         return $msg;
     }
 }

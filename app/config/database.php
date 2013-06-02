@@ -54,7 +54,7 @@ return array(
 
 		'mysql' => array(
 			'driver'    => 'mysql',
-			'host'      => 'localhost',
+			'host'      => '54.251.110.106',
 			'database'  => 'kinkychat',
 			'username'  => 'kinkyuser',
 			'password'  => 'balaiskinky',

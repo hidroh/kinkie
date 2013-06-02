@@ -44,7 +44,7 @@ class StartServerCommand extends Command {
 		$server = IoServer::factory(
 			new WsServer(
 				new ChatController()
-			), 8080
+			), 80
 		);
 		$server->run();
 		
