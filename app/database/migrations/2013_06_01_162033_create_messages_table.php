@@ -17,6 +17,7 @@ class CreateMessagesTable extends Migration {
             $table->increments('id');
             $table->string('user_id');
             $table->string('username');
+            $table->string('gender');
             $table->decimal('latitude',5,2);
             $table->decimal('longitude',5,2);
             $table->string('message');
