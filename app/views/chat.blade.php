@@ -71,7 +71,7 @@
                     $('#topinfo span').text(e.message);
 					setTimeout("$('#topinfo').fadeOut(500)", 5000);
 				} else if (e.type == 'new') {
-
+                    console.log(e.data);
                 }
             }
 

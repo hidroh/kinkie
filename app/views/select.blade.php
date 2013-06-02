@@ -35,7 +35,7 @@
     }
 
 window.fbAsyncInit = function() {
-  FB.init({ appId: '461663813917591', 
+  FB.init({ appId: '141581032697864', 
         status: true, 
         cookie: true,
         xfbml: true,
@@ -111,7 +111,7 @@ window.fbAsyncInit = function() {
         <div style="margin-top:30px;">
             <div style="width:100%;float:left;text-align:center;">
                 <div id="fb" style="background:#2c3e50;display:inline-block;padding:35px 30px;width:130px;border-radius:100px;">
-                    <a href="/join"><i style="font-size:60px;color:#3498db;" class="icon-facebook"></i></a>
+                    <a href="javascript:;"><i style="font-size:60px;color:#3498db;" class="icon-facebook"></i></a>
                 </div>
             </div>
         </div>
