@@ -121,7 +121,7 @@ class ChatController implements MessageComponentInterface {
         //             ->get();
 
         $users = DB::select('select *,(6371* acos(cos(radians(?)) * cos(radians(latitude )) * cos(radians(longitude) - radians(?)) 
-+ sin(radians(?)) * sin(radians(latitude)))) AS distance FROM messages where latitude = ? and longitude=? having distance<?' , array($lat,$long,$lat,$lat,$long,0.5));
++ sin(radians(?)) * sin(radians(latitude)))) AS distance FROM messages having distance<?' , array($lat,$long,$lat,0.5));
         $userCount = count($users);
         echo "Found {$userCount} users\n";
         // var_dump($users);
@@ -130,12 +130,14 @@ class ChatController implements MessageComponentInterface {
 
     private function retrieveMessages($connection, $lat, $long) {
         echo "Retrieving message for {$connection->resourceId} at ({$lat}, {$long})\n";
-        $messages = DB::table('messages')
-                    ->whereBetween('latitude', array($lat - 1, $lat + 1))
-                    ->whereBetween('longitude', array($long - 1, $long + 1))
-                    ->orderBy('id', 'desc')
-                    ->take(10)
-                    ->get();
+         $messages = DB::select('select *,(6371* acos(cos(radians(?)) * cos(radians(latitude )) * cos(radians(longitude) - radians(?)) 
++ sin(radians(?)) * sin(radians(latitude)))) AS distance FROM messages having distance<? order by id limit 10' , array($lat,$long,$lat,0.5));
+        // $messages = DB::table('messages')
+        //             ->whereBetween('latitude', array($lat - 1, $lat + 1))
+        //             ->whereBetween('longitude', array($long - 1, $long + 1))
+        //             ->orderBy('id', 'desc')
+        //             ->take(10)
+        //             ->get();
         if (($messageCount = count($messages)) > 0) {
             echo "Packing {$messageCount} messages for connection {$connection->resourceId}\n";
             $pastMessages = array();
