@@ -19,13 +19,14 @@ class ChatController implements MessageComponentInterface {
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
+	echo "New message! ($msg)\n";
         $msgArray = $this->decodeJsonMessage($msg);
         if (!$msgArray) {
             $this->forgetUser($from);
         } else {
             $isNewConnection = $this->rememberUser($from, $msgArray['user_id']);
             if ($isNewConnection) {
-                $this->retrieveMessages($from, $msgArray['latitude'], $msgArray['longitude']);
+//                $this->retrieveMessages($from, $msgArray['latitude'], $msgArray['longitude']);
             }
 
             $this->forwardMessage($from, $msgArray);
