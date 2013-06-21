@@ -19,6 +19,10 @@ body {
     background: #c0392b;
 }
 
+.profile-screen {
+    background: #c0392b;
+}
+
 #messagebox {
     width: 100%;
     position: absolute;
