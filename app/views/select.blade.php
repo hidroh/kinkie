@@ -10,30 +10,6 @@
 
 <script>
 
-    var wsuri = "ws://54.251.109.177:80";
-    var lat, lon;
-    var conn;
-
-    window.onload = function() {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            lat = position.coords.latitude;
-            lon = position.coords.longitude;
-        });
-        
-        conn = new WebSocket(wsuri);
-        conn.onopen = function(e) {
-
-        };
-
-        conn.onmessage = function(e) {
-
-        }
-
-        conn.onerror = function(e) {
-            alert('Oops! We made a doodoo..');
-        }
-    }
-
 window.fbAsyncInit = function() {
   FB.init({ appId: '461663813917591', 
         status: true, 
@@ -53,11 +29,9 @@ window.fbAsyncInit = function() {
             "name": response.first_name + ' ' + response.last_name,
             "gender": response.gender,
             "image": "https://graph.facebook.com/" + response.id + "/picture",
-            "lat": lat,
-            "lon": lon
         }
 
-        conn.send(JSON.stringify(user));
+        // conn.send(JSON.stringify(user));
         $.cookie('user', JSON.stringify(user));
         window.location.href = '/join';
       });
@@ -75,10 +49,8 @@ window.fbAsyncInit = function() {
                             "name": response.first_name + ' ' + response.last_name,
                             "gender": response.gender,
                             "image": "https://graph.facebook.com/" + response.id + "/picture",
-                            "latitude": lat,
-                            "longitude": lon
                         }
-                        conn.send(JSON.stringify(user));
+                        // conn.send(JSON.stringify(user));
                         $.cookie('user', JSON.stringify(user));
                         window.location.href = '/join';
                     });    

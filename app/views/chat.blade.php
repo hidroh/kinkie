@@ -3,88 +3,98 @@
 @section('content')
 <script src="/js/vendor/jquery.textarea-expander.js"></script>
 <script src="http://maps.google.com/maps/api/js?sensor=true&libraries=geometry"></script>
+<script src="http://ec2-122-248-221-140.ap-southeast-1.compute.amazonaws.com:8080/socket.io/socket.io.js"></script>
 
 <div class="chat-screen page">
     <script>
-        var wsuri = "ws://54.251.109.177:80";
-        var lat, lon;
+    try {
+        var lat, lon, connected;
         var lastMessage;
         var watchId;
+        var chat = io.connect('http://ec2-122-248-221-140.ap-southeast-1.compute.amazonaws.com:8080/chat');
 
-        window.onload = function() {
-            watchId = navigator.geolocation.watchPosition(function(position) {
-                lat = position.coords.latitude;
-                lon = position.coords.longitude;
-            }, function() {}, {timeout: 60000});
-
-            navigator.geolocation.getCurrentPosition(function(position) {
-                lat = position.coords.latitude;
-                lon = position.coords.longitude;
-            });
-            
-            var conn = new WebSocket(wsuri);
-            conn.onopen = function(e) {
-                console.log("Connection established!");
+        var initChat = function(lat, lon) {
+            if (lat != null && lon != null && !connected) {
                 var user = JSON.parse($.cookie('user'));
-                
-                conn.send(JSON.stringify({
+
+                chat.emit('new user', JSON.stringify({
                     'type': 'new',
                     'user_id': user.id,
                     'latitude': lat,
                     'longitude': lon
                 }));
+                connected = true;
+                console.log('Chat initiated.');
+            }
+        };
 
-                // send a message
-                $('.textbox textarea').keypress(function() {
-                    if ($(this).val() != '') {
-                        $('.send').attr('disabled', false);
-                    } else {
-                        $('.send').attr('disabled', true);
-                    }
-                }).keypress(function(e) {
-                    var text = $(this).val();
-                    if (e.which == 13 && text) {
-                        addMessage(text, conn);
-                        $('.textbox #text').val('');
-						e.preventDefault(true);
-						return;	
-                    } else if(e.which == 13) {
-						e.preventDefault(true);
-						return;
-					}
+        chat.on('connect', function () {
+            console.log("Connection established!");
+            initChat(lat, lon);
+        });
+
+
+        chat.on('msg', function(data, callback) {
+            e = JSON.parse(data);
+            
+            if(e.type == 'message') {
+                addMessage(true, e.message, null, e.image, e.latitude, e.longitude, e.user_id, e.gender);
+            } else if(e.type == 'info') {
+                $('#topinfo').show();
+                $('#topinfo span').text(e.message);
+                setTimeout("$('#topinfo').fadeOut(500)", 5000);
+            } else if (e.type == 'new') {
+                console.log(e);
+                e.messages.forEach(function(f) {
+                    addMessage(true, f.message, null, f.image, f.latitude, f.longitude, f.user_id, f.gender);
                 });
+            }
+        });
 
-                $('.btn.send').click(function() {
-                    var text = $('.textbox #text').val();
-                    addMessage(text, conn);
-                    $('.textbox #text').val('');
-                });
-            };
+        window.onload = function() {
 
-            conn.onmessage = function(e) {
-                e = JSON.parse(e.data);
-				
-				if(e.type == 'message') {
-					addMessage(e.message, null, e.image, e.latitude, e.longitude, e.user_id, e.gender);
-				} else if(e.type == 'info') {
-					$('#topinfo').show();
-                    $('#topinfo span').text(e.message);
-					setTimeout("$('#topinfo').fadeOut(500)", 5000);
-				} else if (e.type == 'new') {
-                    console.log(e);
-                    e.messages.forEach(function(f) {
-                        addMessage(f.message, null, f.image, f.latitude, f.longitude, f.user_id, f.gender);
-                    });
+            watchId = navigator.geolocation.watchPosition(function(position) {
+                console.log("Location updated.");
+                lat = position.coords.latitude;
+                lon = position.coords.longitude;
+                // initChat(lat, lon);
+            }, function() {}, {timeout: 60000});
+
+            // send a message
+            $('.textbox textarea').keypress(function() {
+                if ($(this).val() != '') {
+                    $('.send').attr('disabled', false);
+                } else {
+                    $('.send').attr('disabled', true);
                 }
-            }
+            }).keypress(function(e) {
+                var text = $(this).val();
+                if (e.which == 13 && text) {
+                    addMessage(false, text, chat);
+                    $('.textbox #text').val('');
+                    e.preventDefault(true);
+                    return; 
+                } else if(e.which == 13) {
+                    e.preventDefault(true);
+                    return;
+                }
+            });
 
-            conn.onerror = function(e) {
-                $('.textbox > *').attr('disabled');
-                $('#noone').html('We couldn\'t reach anyone <i class="icon-frown"></i>');
-            }
+            $('.btn.send').click(function() {
+                var text = $('.textbox #text').val();
+                addMessage(false, text, chat);
+                $('.textbox #text').val('');
+            });
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+                console.log("Location determined");
+                lat = position.coords.latitude;
+                lon = position.coords.longitude;
+                initChat(lat, lon);
+            });
         }
 
-        function addMessage(e, conn, image, lat2, lon2, userid, gender) {
+        function addMessage(displayed, e, conn, image, lat2, lon2, userid, gender) {
             var user = JSON.parse($.cookie('user'));
             var message = {
                 "type": 'message',
@@ -96,71 +106,78 @@
                 "gender": gender || user.gender
             }
 
-            gender = gender || user.gender;
+            if (displayed) {
+                gender = gender || user.gender;
 
-            userid = userid || user.id;
+                userid = userid || user.id;
 
-            var image = image || user.image;
+                var image = image || user.image;
 
-            e = e.replace(/^\s+|\s+$/g, '');
-            if (e == '') {
-                $('.textbox #text').val('');
-                return;
-            }
-
-            $('#noone').fadeOut(function() {
-                $(this).remove();
-            });
-
-            var p = $('<p/>').text(e);
-            var text = $('<div/>').addClass('text');
-            if (lastMessage == userid) {
-                var div = $('#messagebox .message:last-child');
-                div.find('.text').append(p);
-            } else {
-                text.append(p);
-                var avatar = $('<div/>').addClass('avatar').css('backgroundImage', "url('" + image + "')");
-                var away = $('<div/>').addClass('away');
-                var dist = 0;
-                if (conn == null && lat2 && lon2) {
-                    var from = new google.maps.LatLng(lat, lon);
-                    var to   = new google.maps.LatLng(lat2, lon2);
-                    dist = google.maps.geometry.spherical.computeDistanceBetween(from, to);
-                    $(away).text(Math.ceil(dist) + 'm away');
+                e = e.replace(/^\s+|\s+$/g, '');
+                if (e == '') {
+                    $('.textbox #text').val('');
+                    return;
                 }
-                var div = $('<div />').addClass('message').append(text).append(avatar).append(away);
+
+                $('#noone').fadeOut(function() {
+                    $(this).remove();
+                });
+
+                var p = $('<p/>').text(e);
+                var text = $('<div/>').addClass('text');
+                if (lastMessage == userid) {
+                    var div = $('#messagebox .message:last-child');
+                    div.find('.text').append(p);
+                } else {
+                    text.append(p);
+                    var avatar = $('<div/>').addClass('avatar').css('backgroundImage', "url('" + image + "')");
+                    var away = $('<div/>').addClass('away');
+                    var dist = 0;
+                    if (conn == null && lat2 && lon2) {
+                        var from = new google.maps.LatLng(lat, lon);
+                        var to   = new google.maps.LatLng(lat2, lon2);
+                        dist = google.maps.geometry.spherical.computeDistanceBetween(from, to);
+                        $(away).text(Math.ceil(dist) + 'm away');
+                    }
+                    var div = $('<div />').addClass('message').append(text).append(avatar).append(away);
+                }
+
+                div.addClass(gender);
+
+                $('#messagebox').append(div);
+
+                $('.message').addClass('show');
+
+                // smilies
+                e = p.text().replace(/(<([^>]+)>)/ig,"");
+                e = e.replace(/\:\)/g, '<i class="icon icon-smile"></i>');
+                e = e.replace(/\:\|/g, '<i class="icon icon-meh"></i>');
+                e = e.replace(/\:\(/g, '<i class="icon icon-frown"></i>');
+                e = e.replace(/\<3/g, '<i class="icon icon-heart"></i>');
+                e = e.replace(/\(y\)/g, '<i class="icon icon-hand-right"></i>');
+                
+                p.html(e);
+
+                $("html, body").animate({ scrollTop: $(document).height() }, 200);
+
+                lastMessage = userid;
             }
 
-            div.addClass(gender);
-
-            $('#messagebox').append(div);
-
-            $('.message').addClass('show');
-
-            // smilies
-            e = p.text().replace(/(<([^>]+)>)/ig,"");
-            e = e.replace(/\:\)/g, '<i class="icon icon-smile"></i>');
-            e = e.replace(/\:\|/g, '<i class="icon icon-meh"></i>');
-            e = e.replace(/\:\(/g, '<i class="icon icon-frown"></i>');
-            e = e.replace(/\<3/g, '<i class="icon icon-heart"></i>');
-            e = e.replace(/\(y\)/g, '<i class="icon icon-hand-right"></i>');
-
-            p.html(e);
             
             if (conn) {
-                conn.send(JSON.stringify(message));
-                div.addClass('mine');
+                conn.emit('msg', JSON.stringify(message));
+                if (displayed) {
+                    div.addClass('mine');
+                }
             }
-            $("html, body").animate({ scrollTop: $(document).height() }, 200);
-
-            prune();
-
-            lastMessage = userid;
         }
-
-        function prune() {
-
+    }
+    catch(e) {
+        window.onload = function() {
+            $('.textbox > *').attr('disabled');
+            $('#noone').html('We couldn\'t reach anyone <i class="icon-frown"></i>');
         }
+    }
     </script>
 
     <p id="topinfo" class="btn btn-mini" style="display:none;font-size:11px;position:fixed;top:15px;left:10px;z-index:200;">Talking with <span>0</span> people right now.</p>
