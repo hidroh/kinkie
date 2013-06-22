@@ -29,9 +29,6 @@
 	var lastMessage;
 	var watchId;
 	var chat = io.connect('http://ec2-122-248-221-140.ap-southeast-1.compute.amazonaws.com:8080/chat');
-	var geo = {'nearby': 10, 'country': 5000, 'globally': -1};
-	var geoTooltip = {'nearby': 'Next door', 'country': 'Across the border', 'globally': 'Far far away'}
-	var selectedGeo = geo.nearby;
 	
 	$(document).ready(function() {
 		
@@ -231,26 +228,6 @@
 					$('.textbox #text').val('');
 				});
 				
-				$('.btn.geo').click(function() {
-					switch (selectedGeo) {
-						case geo.nearby:
-							selectedGeo = geo.country;
-							$('#icon-geo').attr('class', 'icon-plane');
-							$('#btnGeo').attr('title', geoTooltip.country);
-							break;
-						case geo.country:
-							selectedGeo = geo.globally;
-							$('#icon-geo').attr('class', 'icon-globe');
-							$('#btnGeo').attr('title', geoTooltip.globally);
-							break;
-						case geo.globally:
-							selectedGeo = geo.nearby;
-							$('#icon-geo').attr('class', 'icon-map-marker');
-							$('#btnGeo').attr('title', geoTooltip.nearby);
-							break;
-					}
-				});
-				
 				navigator.geolocation.getCurrentPosition(function(position) {
 					console.log("Location determined");
 					lat = position.coords.latitude;
@@ -324,7 +301,7 @@
 				"message": e,
 				"image": image || user.image,
 				"gender": gender || user.gender,
-				"geo": selectedGeo
+				"geo": -1
 			}
 
 			if (displayed) {
@@ -506,9 +483,8 @@
 				<button class="btn" data-smily="(y)"><i class="icon-hand-right"></i></button>
 			</div>
 			<div class="textbar">
-				<button id="btnGeo" class="btn geo" title="Next door" style="position:absolute;top:0;left:0;width:50px;margin:10px;font-size:20px;"><i id="icon-geo" class="icon-map-marker"></i></button>
-				<button class="btn smily" style="position:absolute;top:0;left:60px;width:50px;margin:10px;font-size:20px;"><i class="icon-smile"></i></button>
-				<textarea id="text" placeholder="Your kinky thoughts go here..." style="margin:10px 120px 10px 80px;min-height:32px;height:32px;padding:6px 9px !important;"></textarea>
+				<button class="btn smily" style="position:absolute;top:0;left:0px;width:50px;margin:10px;font-size:20px;"><i class="icon-smile"></i></button>
+				<textarea id="text" placeholder="Your kinky thoughts go here..." style="margin:10px 120px 10px 20px;min-height:32px;height:32px;padding:6px 9px !important;"></textarea>
 				<button class="btn send" style="position:absolute;top:0;right:0;width:90px;margin:10px;">Send <i class="icon-heart"></i></button>
 			</div>
 		</div>
