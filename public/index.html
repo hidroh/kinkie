@@ -17,9 +17,21 @@
 
 <script src="http://maps.google.com/maps/api/js?sensor=true&libraries=geometry"></script>
 
+<script src="./js/vendor/jquery.textarea-expander.js"></script>
+<script src="http://ec2-122-248-221-140.ap-southeast-1.compute.amazonaws.com:8080/socket.io/socket.io.js"></script>
+
+
 <script type="text/javascript">
 	
 	var updateButton;
+	
+	var lat, lon, connected;
+	var lastMessage;
+	var watchId;
+	var chat = io.connect('http://ec2-122-248-221-140.ap-southeast-1.compute.amazonaws.com:8080/chat');
+	var geo = {'nearby': 10, 'country': 5000, 'globally': -1};
+	var geoTooltip = {'nearby': 'Next door', 'country': 'Across the border', 'globally': 'Far far away'}
+	var selectedGeo = geo.nearby;
 	
 	$(document).ready(function() {
 		
@@ -30,21 +42,23 @@
 			
 		}
 		
+		// Home page stuff
+		
 		function handleHomePage() {
 			
-			$('button#join').click(function() {
+			$('div.page.home-screen button#join').click(function() {
 				displayPage('join');
 			});
 			
-			$('button').text('Could not detect your location! :(');
-			$('button').attr('disabled', 'disabled');
+			$('div.page.home-screen button#join').text('Could not detect your location! :(');
+			$('div.page.home-screen button#join').attr('disabled', 'disabled');
 			
 			if(navigator.geolocation != null) {
 				navigator.geolocation.getCurrentPosition(function(position) {
-					$('button').text('Join the fun');
-					$('button').attr('disabled', false);
+					$('div.page.home-screen button#join').text('Join the fun');
+					$('div.page.home-screen button#join').attr('disabled', false);
 					
-					$('button#join').trigger('click');
+					//$('div.page.home-screen button#join').trigger('click');
 				}, function() {
 					// Unable to get current position
 				});
@@ -54,21 +68,23 @@
 			
 		}
 		
+		// Profile page stuff
+		
 		function handleProfilePage() {
 		
 			var user = JSON.parse($.cookie('user'));
-			$('#image').css('backgroundImage', "url('" + user.image + "')").find('i').css('opacity', '0');
-			$('#name').text(user.name);
+			$('div.page.profile-screen #image').css('backgroundImage', "url('" + user.image + "')").find('i').css('opacity', '0');
+			$('div.page.profile-screen #name').text(user.name);
 
-			$('.goto').click(function() {
-				window.location.href = '/chat';
+			$('div.page.profile-screen .goto').click(function() {
+				handleChatPage();
+				displayPage('chat');
 			});
 		
 		}
 		
 		updateButton = function updateButton(response) {
-			console.log('FB UPDATE BUTTON');
-			console.log(response);
+			
 			if (response.authResponse) {
 				
 				//user is already logged in and connected
@@ -114,6 +130,266 @@
 					return false; 
 				});
 		  
+			}
+		}
+		
+		// Chat page stuff
+		
+		function handleChatPage() {
+			
+			if (!window.console) console = {log: function() {}};
+			var disableChat = function() {
+				$('.textbox > *').attr('disabled');
+				$('#noone').html('We couldn\'t reach anyone <i class="icon-frown"></i>');
+			};
+			
+			var enableChat = function() {
+				$('.textbox > *').removeAttr('disabled');
+				$('#noone').html('It\'s lonely in here <i class="icon-meh"></i><p style="font-size:15px;">Why not say something to start a conversation</p>');
+			}
+			
+			try {
+
+				var initChat = function(lat, lon) {
+					if (lat != null && lon != null && !connected) {
+						var user = JSON.parse($.cookie('user'));
+
+						chat.emit('new user', JSON.stringify({
+							'type': 'new',
+							'user_id': user.id,
+							'latitude': lat,
+							'longitude': lon
+						}));
+						connected = true;
+						console.log('Chat initiated.');
+					}
+				};
+
+				chat.on('connect', function () {
+					console.log("Connection established!");
+					initChat(lat, lon);
+				});
+
+				chat.on('disconnect', function() {
+					console.log('Connection lost.');
+					connected = false;
+					disableChat();
+				})
+
+				chat.on('reconnect', function() {
+					console.log('Reconnected!');
+					enableChat();
+				});
+
+				chat.on('msg', function(data, callback) {
+					e = JSON.parse(data);
+					
+					if(e.type == 'message') {
+						addMessage(true, e.message, null, e.image, e.latitude, e.longitude, e.user_id, e.gender);
+					} else if(e.type == 'info') {
+						$('#topinfo').show();
+						$('#topinfo span').text(e.message);
+						setTimeout("$('#topinfo').fadeOut(500)", 5000);
+					} else if (e.type == 'new') {
+						console.log(e);
+						e.messages.forEach(function(f) {
+							addMessage(true, f.message, null, f.image, f.latitude, f.longitude, f.user_id, f.gender);
+						});
+					}
+				});
+				
+				watchId = navigator.geolocation.watchPosition(function(position) {
+					console.log("Location updated.");
+					lat = position.coords.latitude;
+					lon = position.coords.longitude;
+					// initChat(lat, lon);
+				}, function() {}, {timeout: 60000});
+				
+				// send a message
+				$('.textbox textarea').keypress(function() {
+					if ($(this).val() != '') {
+						$('.send').attr('disabled', false);
+					} else {
+						$('.send').attr('disabled', true);
+					}
+				}).keypress(function(e) {
+					var text = $(this).val();
+					if (e.which == 13 && text) {
+						addMessage(false, text, chat);
+						$('.textbox #text').val('');
+						e.preventDefault(true);
+						return; 
+					} else if(e.which == 13) {
+						e.preventDefault(true);
+						return;
+					}
+				});
+				
+				$('.btn.send').click(function() {
+					var text = $('.textbox #text').val();
+					addMessage(false, text, chat);
+					$('.textbox #text').val('');
+				});
+				
+				$('.btn.geo').click(function() {
+					switch (selectedGeo) {
+						case geo.nearby:
+							selectedGeo = geo.country;
+							$('#icon-geo').attr('class', 'icon-plane');
+							$('#btnGeo').attr('title', geoTooltip.country);
+							break;
+						case geo.country:
+							selectedGeo = geo.globally;
+							$('#icon-geo').attr('class', 'icon-globe');
+							$('#btnGeo').attr('title', geoTooltip.globally);
+							break;
+						case geo.globally:
+							selectedGeo = geo.nearby;
+							$('#icon-geo').attr('class', 'icon-map-marker');
+							$('#btnGeo').attr('title', geoTooltip.nearby);
+							break;
+					}
+				});
+				
+				navigator.geolocation.getCurrentPosition(function(position) {
+					console.log("Location determined");
+					lat = position.coords.latitude;
+					lon = position.coords.longitude;
+					initChat(lat, lon);
+				});
+				
+			} catch(e) {
+				disableChat();
+			}
+			
+			if ($('.message').length > 0) {
+				$('#noone').hide();
+				$('.message').addClass('show');
+			} else {
+				$('#noone').addClass('go');
+			}
+
+			$('.textbox #text').TextAreaExpander(0, 60);
+
+			$('.btn.smily').click(function() {
+				if (!$('.smilies').hasClass('go')) {
+					$('.smilies').addClass('go');
+				} else {
+					$('.smilies').removeClass('go');
+				}
+			});
+
+			$('.smilies .btn').click(function() {
+				$('.btn.smily').click();
+				var text = $('.textbox #text').val();
+				var data = $(this).data('smily');
+				$('.textbox #text').val(text + ' ' + data);
+			});
+
+			// lock
+			$('#lockmein').click(function() {
+				$('#flash').fadeIn(100, function() { $(this).fadeOut(500); });
+				if (!$(this).hasClass('locked')) {
+					navigator.geolocation.getCurrentPosition(function(position) {
+						lat = position.coords.latitude;
+						lon = position.coords.longitude;
+					});
+					navigator.geolocation.clearWatch(watchId);
+					$(this).addClass('locked').find('i').removeClass('icon-unlock-alt').addClass('icon-lock');
+					$(this).find('span').text('Get me out of here!');
+				} else {
+					watchId = navigator.geolocation.watchPosition(function(position) {
+						lat = position.coords.latitude;
+						lon = position.coords.longitude;
+					}, function() {}, {timeout: 60000});
+
+					navigator.geolocation.getCurrentPosition(function(position) {
+						lat = position.coords.latitude;
+						lon = position.coords.longitude;
+					});
+					$(this).removeClass('locked').find('i').removeClass('icon-lock').addClass('icon-unlock-alt');
+					$(this).find('span').text('Lock me in this position.');
+				}
+			});
+			
+		}
+		
+		function addMessage(displayed, e, conn, image, lat2, lon2, userid, gender) {
+			var user = JSON.parse($.cookie('user'));
+			var message = {
+				"type": 'message',
+				"user_id": user.id,
+				"latitude": lat,
+				"longitude": lon,
+				"message": e,
+				"image": image || user.image,
+				"gender": gender || user.gender,
+				"geo": selectedGeo
+			}
+
+			if (displayed) {
+				gender = gender || user.gender;
+
+				userid = userid || user.id;
+
+				var image = image || user.image;
+
+				e = e.replace(/^\s+|\s+$/g, '');
+				if (e == '') {
+					$('.textbox #text').val('');
+					return;
+				}
+
+				$('#noone').fadeOut(function() {
+					$(this).remove();
+				});
+
+				var p = $('<p/>').text(e);
+				var text = $('<div/>').addClass('text');
+				if (lastMessage == userid) {
+					var div = $('#messagebox .message:last-child');
+					div.find('.text').append(p);
+				} else {
+					text.append(p);
+					var avatar = $('<div/>').addClass('avatar').css('backgroundImage', "url('" + image + "')");
+					var away = $('<div/>').addClass('away');
+					var dist = 0;
+					if (conn == null && lat2 && lon2) {
+						var from = new google.maps.LatLng(lat, lon);
+						var to   = new google.maps.LatLng(lat2, lon2);
+						dist = google.maps.geometry.spherical.computeDistanceBetween(from, to);
+						$(away).text(Math.ceil(dist) + 'm away');
+					}
+					var div = $('<div />').addClass('message').append(text).append(avatar).append(away);
+				}
+
+				div.addClass(gender);
+				if (userid == user.id) {
+					div.addClass('mine');
+				}
+
+				$('#messagebox').append(div);
+
+				$('.message').addClass('show');
+
+				// smilies
+				e = p.text().replace(/(<([^>]+)>)/ig,"");
+				e = e.replace(/\:\)/g, '<i class="icon icon-smile"></i>');
+				e = e.replace(/\:\|/g, '<i class="icon icon-meh"></i>');
+				e = e.replace(/\:\(/g, '<i class="icon icon-frown"></i>');
+				e = e.replace(/\<3/g, '<i class="icon icon-heart"></i>');
+				e = e.replace(/\(y\)/g, '<i class="icon icon-hand-right"></i>');
+				
+				p.html(e);
+
+				$("html, body").animate({ scrollTop: $(document).height() }, 200);
+
+				lastMessage = userid;
+			}
+
+			
+			if (conn) {
+				conn.emit('msg', JSON.stringify(message));
 			}
 		}
 		
@@ -206,5 +482,40 @@
 		
 	</div>
 	
+	<!------------------------------- Chat screen ------------------------------->
+	
+	<div class="chat-screen page" style="display: none;">
+		
+		<p id="topinfo" class="btn btn-mini" style="display:none;font-size:11px;position:fixed;top:15px;left:10px;z-index:200;">Talking with <span>0</span> people right now.</p>
+		
+		<a id="lockmein" href="javascript:;" class="btn" style="display:none;position:fixed;top:10px;right:10px;z-index:1000;"><span>Lock me in this position.</span> <i class="icon-unlock-alt"></i></a>
+		
+		<div id="messagebox">
+			
+			<div id="noone" style="margin-top:-12px;position:absolute;width:100%;color:#c0c0c0;text-align:center;font-size:28px;">It's lonely in here <i class="icon-meh"></i><p style="font-size:15px;">Why not say something to start a conversation</p></div>
+			
+		</div>
+		
+		
+		<div class="textbox">
+			<div class="smilies">
+				<button class="btn" data-smily=":)"><i class="icon-smile"></i></button>
+				<button class="btn" data-smily=":|"><i class="icon-meh"></i></button>
+				<button class="btn" data-smily=":("><i class="icon-frown"></i></button>
+				<button class="btn" data-smily="<3"><i class="icon-heart"></i></button>
+				<button class="btn" data-smily="(y)"><i class="icon-hand-right"></i></button>
+			</div>
+			<div class="textbar">
+				<button id="btnGeo" class="btn geo" title="Next door" style="position:absolute;top:0;left:0;width:50px;margin:10px;font-size:20px;"><i id="icon-geo" class="icon-map-marker"></i></button>
+				<button class="btn smily" style="position:absolute;top:0;left:60px;width:50px;margin:10px;font-size:20px;"><i class="icon-smile"></i></button>
+				<textarea id="text" placeholder="Your kinky thoughts go here..." style="margin:10px 120px 10px 80px;min-height:32px;height:32px;padding:6px 9px !important;"></textarea>
+				<button class="btn send" style="position:absolute;top:0;right:0;width:90px;margin:10px;">Send <i class="icon-heart"></i></button>
+			</div>
+		</div>
+		
+	</div>
+	
+	<div id="flash"></div>
+
 </body>
 </html>
