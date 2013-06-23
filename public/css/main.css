@@ -126,10 +126,11 @@ body {
 
 .message .away {
     position: absolute;
-    top: 60px;
-    left: 10px;
+    top: 57px;
+    left: 11px;
     font-size: 9px;
     width: 50px;
+	line-height: 10px;
     text-align: center;
 }
 
