@@ -2,7 +2,7 @@ var io = require('socket.io-client');
 var chat = io.connect('http://localhost:8080/chat');
 var keywords = ['coffee', 'lunch'];
 var business = (function() {
-    var id, lat, lon, geo, logo;
+    var id, lat, lon, geo, logo, seen;
 
     var init = function() {
         this.id = Math.random();
@@ -10,10 +10,21 @@ var business = (function() {
         this.lon = 103.8558;
         this.geo = 10;
         this.logo = "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/276812_22092443056_333388977_q.jpg";
+        this.seen = {};
     };
 
     var getPromotion = function(data) {
         var userMessage = JSON.parse(data);
+        var now = new Date().getTime() / 1000; // in seconds
+        if (userMessage.user_id in this.seen) {
+            var lastSeen = this.seen[userMessage.user_id];
+            if (now - lastSeen <= 60) {
+                return;
+            }
+        } else {
+            this.seen[userMessage.user_id] = now;
+        }
+
         var allowed = false;
         for (var i = 0; i < keywords.length; i++) {
             if (userMessage.message.indexOf(keywords[i]) !== -1) {
@@ -51,6 +62,7 @@ var business = (function() {
         lat: lat,
         lon: lon,
         geo: geo,
+        seen: seen
     }
 })();
 
