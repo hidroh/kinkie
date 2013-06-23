@@ -1,14 +1,14 @@
 var io = require('socket.io-client');
-var chat = io.connect('http://localhost:8080/chat');
-// var chat = io.connect('http://ec2-122-248-221-140.ap-southeast-1.compute.amazonaws.com:8080/chat');
-var vendors = [];
+// var chat = io.connect('http://localhost:8080/chat');
+var chat = io.connect('http://ec2-122-248-221-140.ap-southeast-1.compute.amazonaws.com:8080/chat');
+var vendors = null;
 var business = function() {
     var id, lat, lon, geo, logo, seen, keywords;
 
-    var init = function(logo, keywords) {
+    var init = function(lat, lon, logo, keywords) {
         this.id = Math.random();
-        this.lat = 1.2931;
-        this.lon = 103.8558;
+        this.lat = lat;
+        this.lon = lon;
         this.geo = 10;
         this.logo = logo;
         this.seen = {};
@@ -27,15 +27,14 @@ var business = function() {
             this.seen[userMessage.user_id] = now;
         }
 
-        var allowed = false;
-        for (var i = 0; i < this.keywords.length; i++) {
-            if (userMessage.message.indexOf(this.keywords[i]) !== -1) {
-                allowed = true;
-                break;
+        var text = '';
+        for (var keyword in this.keywords) {
+            if (userMessage.message.indexOf(keyword) !== -1) {
+                text += this.keywords[keyword] + " ";
             }
         };
 
-        if (!allowed) {
+        if (!text) {
             return null;
         }
 
@@ -46,7 +45,7 @@ var business = function() {
             "user_id": this.id,
             "latitude": this.lat,
             "longitude": this.lon,
-            "message": "Awesome promotion alabama",
+            "message": text,
             "image": this.logo,
             "gender": "business",
             "geo": this.geo,
@@ -68,7 +67,7 @@ var business = function() {
     }
 };
 
-var initChat = function(vendors) {
+var initChat = function() {
     for (var i = 0; i < vendors.length; i++) {
         b = vendors[i];
         if (b.lat != null && b.lon != null) {
@@ -85,7 +84,25 @@ var initChat = function(vendors) {
     };
 };
 
-var getVendorPromotions = function(data) {
+var initVendors = function() {
+    var starbucks = new business();
+    starbucks.init(
+        1.2931,
+        103.8558,
+        "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/276812_22092443056_333388977_q.jpg",
+        {"coffee": "Awesome starbucks promotion alabama"}
+    );
+    var mcdonalds = new business();
+    mcdonalds.init(
+        1.2931,
+        103.8558,
+        "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-frc3/373478_50245567013_320421372_q.jpg",
+        {"lunch": "Awesome mcdonald's promotion alabama"}
+    );
+    vendors = [starbucks, mcdonalds];
+}
+
+var getPromotions = function(data) {
     var promotions = new Array();
     for (var i = 0; i < vendors.length; i++) {
         b = vendors[i];
@@ -100,12 +117,8 @@ var getVendorPromotions = function(data) {
 
 chat.on('connect', function () {
     console.log("Connection established!");
-    var starbucks = new business();
-    starbucks.init("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/276812_22092443056_333388977_q.jpg", ["coffee"]);
-    var mcdonalds = new business();
-    mcdonalds.init("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-frc3/373478_50245567013_320421372_q.jpg", ["lunch"]);
-    vendors = [starbucks, mcdonalds];
-    initChat(vendors);
+    initVendors();
+    initChat();
 });
 
 chat.on('disconnect', function() {
@@ -123,11 +136,11 @@ chat.on('msg', function(data, callback) {
     var promotions = {};
 
     if(e.type == 'message') {
-        promotions = getVendorPromotions(data);
+        promotions = getPromotions(data);
     } else if (e.type == 'new') {
         console.log(e);
         e.messages.forEach(function(f) {
-            promotions = getVendorPromotions(data);
+            promotions = getPromotions(data);
         });
     }
 
