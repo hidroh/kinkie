@@ -88,6 +88,10 @@ body {
     background: #ea4c89;
 }
 
+.message.business .text:before {
+    background: orange;
+}
+
 .message.mine .text:before {
     right: 0;
     left: auto;
