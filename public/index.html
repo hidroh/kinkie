@@ -265,39 +265,19 @@
 				$('#noone').addClass('go');
 			}
 
-			$('.textbox #text').TextAreaExpander(0, 60);
+			//$('.textbox #text').TextAreaExpander(0, 60);
 			
-			// Copypasta from http://stackoverflow.com/questions/14927436/html-blur-knocking-fixed-items-out-of-place?lq=1
-			$('.textbox #text').on("blur", function(e) {
-				setTimeout(function() {
-					$("body").css("height", "+=1").css("height", "-=1");
-				}, 0);
-			});
+			/* cache dom references */ 
+			var $body = jQuery('body'); 
+			var $inputs = jQuery('.textbox #text'); 
 			
-			
-			/*
-			//if (navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i)) {
-
-				$('#messagebox').on('focus', function() {
-					if ($(document).height() > $(window).height()) {
-						$('.textbox').css({
-							position : 'absolute'
-						});
-						$("html, body").animate({
-							scrollTop : $(document).height()
-						}, 1);
-					}
-				});
-				$('#messagebox').on('blur', function() {
-					$('.textbox').css({
-						position : 'fixed'
-					});
-					$("html, body").animate({
-						scrollTop : $(document).height()
-					}, 1);
-				});
-			//}
-			*/
+			/* bind events */ 
+			$inputs.on('focus', function(e) { 
+					$body.addClass('fixfixed'); 
+			}); 
+			$inputs.on('blur', function(e) { 
+				$body.removeClass('fixfixed'); 
+			}); 
 			
 		}
 		
