@@ -267,6 +267,13 @@
 
 			$('.textbox #text').TextAreaExpander(0, 60);
 			
+			// Copypasta from http://stackoverflow.com/questions/14927436/html-blur-knocking-fixed-items-out-of-place?lq=1
+			$('.textbox #text').on("blur", function(e) {
+				setTimeout(function() {
+					$("body").css("height", "+=1").css("height", "-=1");
+				}, 0);
+			});
+			
 		}
 		
 		function addMessage(displayed, e, conn, image, lat2, lon2, userid, gender) {
