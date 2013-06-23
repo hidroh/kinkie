@@ -50,10 +50,6 @@ body {
 	zoom: 1;
 }
 
-.fixfixed  .textbox { 
-    position: absolute; 
-} 
-
 .textbox .textbar {
     position: relative;
     width: 100%;

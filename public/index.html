@@ -6,6 +6,7 @@
 <title></title>
 <meta name="description" content="">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes" />
 
 <link rel="stylesheet" href="./css/bootstrap.css">
 <link rel="stylesheet" href="./css/font-awesome/css/font-awesome.css">
@@ -265,19 +266,7 @@
 				$('#noone').addClass('go');
 			}
 
-			//$('.textbox #text').TextAreaExpander(0, 60);
-			
-			/* cache dom references */ 
-			var $body = jQuery('body'); 
-			var $inputs = jQuery('.textbox #text'); 
-			
-			/* bind events */ 
-			$inputs.on('focus', function(e) { 
-					$body.addClass('fixfixed'); 
-			}); 
-			$inputs.on('blur', function(e) { 
-				$body.removeClass('fixfixed'); 
-			}); 
+			$('.textbox #text').TextAreaExpander(0, 60);
 			
 		}
 		
