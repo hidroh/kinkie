@@ -45,8 +45,8 @@ body {
     background: #ecf0f1;
     border-top: 1px solid #d0d0d0;
     box-shadow: 0 -25px 25px #E8E5E4;
-    padding-left: 50px;
-    padding-right: 190px;
+    padding-left: 10px;
+    padding-right: 110px;
 }
 
 .textbox textarea {
@@ -179,45 +179,6 @@ body {
     -webkit-transform: rotate(0deg);
 }
 
-#lockmein {
-    -webkit-transitions: all ease-in-out 0.2s;
-    position: absolute;
-    z-index: 5000;
-}
-
-#lockmein.locked {
-    background: #c0392b;
-}
-
-.smilies {
-    position: relative;
-    z-index: 1000;
-    padding: 10px;
-    width: 100%;
-}
-
-.smilies .btn {
-    position: relative;
-    left: -100%;
-    background: #27ae60;
-    -webkit-transition: all 0.5s cubic-bezier(0.61, 0.47, 0.33, 0.86);
-}
-
-.smilies.go .btn {
-    left: 0;
-}
-
 .btn {
     border: 0;
-}
-
-#flash {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: #ffffff;
-    z-index: 500;
 }
