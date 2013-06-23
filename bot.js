@@ -13,10 +13,10 @@ var business = (function() {
     };
 
     var getPromotion = function(data) {
-        var userMessage = JSON.parse(data).message;
+        var userMessage = JSON.parse(data);
         var allowed = false;
         for (var i = 0; i < keywords.length; i++) {
-            if (userMessage.contains(keywords[i])) {
+            if (userMessage.message.indexOf(keywords[i]) !== -1) {
                 allowed = true;
                 break;
             }
@@ -36,7 +36,8 @@ var business = (function() {
             "message": "Awesome promotion alabama",
             "image": this.logo,
             "gender": "business",
-            "geo": this.geo
+            "geo": this.geo,
+            "promotion_id": userMessage.user_id
         };
 
         return message;

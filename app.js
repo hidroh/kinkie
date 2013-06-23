@@ -25,7 +25,8 @@ var chat = io.of('/chat').on('connection', function (socket) {
         {
             'latitude': data.latitude,
             'longitude': data.longitude,
-            'socket': socket
+            'socket': socket,
+            'user_id': data.user_id
         };
     });
 
@@ -36,7 +37,7 @@ var chat = io.of('/chat').on('connection', function (socket) {
         {
             'latitude': data.latitude,
             'longitude': data.longitude,
-            'socket': socket
+            'socket': socket,
         };
     });
 
@@ -81,7 +82,9 @@ var chat = io.of('/chat').on('connection', function (socket) {
         console.log('Forward promotion to users within ' + jsonData.geo + 'km');
         for (var socketId in activeUserSockets) {
             client = activeUserSockets[socketId];
-            client.socket.emit('msg', data);
+            if (client.user_id == jsonData.promotion_id) {
+                client.socket.emit('msg', data);
+            }
         }
     });
 
