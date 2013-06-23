@@ -1,16 +1,18 @@
 var io = require('socket.io-client');
 var chat = io.connect('http://localhost:8080/chat');
-var keywords = ['coffee', 'lunch'];
-var business = (function() {
-    var id, lat, lon, geo, logo, seen;
+// var chat = io.connect('http://ec2-122-248-221-140.ap-southeast-1.compute.amazonaws.com:8080/chat');
+var vendors = [];
+var business = function() {
+    var id, lat, lon, geo, logo, seen, keywords;
 
-    var init = function() {
+    var init = function(logo, keywords) {
         this.id = Math.random();
         this.lat = 1.2931;
         this.lon = 103.8558;
         this.geo = 10;
-        this.logo = "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/276812_22092443056_333388977_q.jpg";
+        this.logo = logo;
         this.seen = {};
+        this.keywords = keywords;
     };
 
     var getPromotion = function(data) {
@@ -18,16 +20,16 @@ var business = (function() {
         var now = new Date().getTime() / 1000; // in seconds
         if (userMessage.user_id in this.seen) {
             var lastSeen = this.seen[userMessage.user_id];
-            if (now - lastSeen <= 60) {
-                return;
-            }
+            // if (now - lastSeen <= 60) {
+                // return;
+            // }
         } else {
             this.seen[userMessage.user_id] = now;
         }
 
         var allowed = false;
-        for (var i = 0; i < keywords.length; i++) {
-            if (userMessage.message.indexOf(keywords[i]) !== -1) {
+        for (var i = 0; i < this.keywords.length; i++) {
+            if (userMessage.message.indexOf(this.keywords[i]) !== -1) {
                 allowed = true;
                 break;
             }
@@ -64,26 +66,46 @@ var business = (function() {
         geo: geo,
         seen: seen
     }
-})();
-
-var initChat = function(b) {
-    if (b.lat != null && b.lon != null) {
-
-        chat.emit('new business', JSON.stringify({
-            'type': 'new',
-            'business_id': b.id,
-            'latitude': b.lat,
-            'longitude': b.lon
-        }));
-        connected = true;
-        console.log('Chat initiated.');
-    }
 };
+
+var initChat = function(vendors) {
+    for (var i = 0; i < vendors.length; i++) {
+        b = vendors[i];
+        if (b.lat != null && b.lon != null) {
+
+            chat.emit('new business', JSON.stringify({
+                'type': 'new',
+                'business_id': b.id,
+                'latitude': b.lat,
+                'longitude': b.lon
+            }));
+            connected = true;
+            console.log('Chat initiated.');
+        }
+    };
+};
+
+var getVendorPromotions = function(data) {
+    var promotions = new Array();
+    for (var i = 0; i < vendors.length; i++) {
+        b = vendors[i];
+        var p = b.getPromotion(data);
+        if (p) {
+            promotions.push(p);
+        }
+    };
+
+    return promotions;
+}
 
 chat.on('connect', function () {
     console.log("Connection established!");
-    business.init();
-    initChat(business);
+    var starbucks = new business();
+    starbucks.init("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/276812_22092443056_333388977_q.jpg", ["coffee"]);
+    var mcdonalds = new business();
+    mcdonalds.init("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-frc3/373478_50245567013_320421372_q.jpg", ["lunch"]);
+    vendors = [starbucks, mcdonalds];
+    initChat(vendors);
 });
 
 chat.on('disconnect', function() {
@@ -98,18 +120,19 @@ chat.on('reconnect', function() {
 chat.on('msg', function(data, callback) {
     console.log('Message received.');
     e = JSON.parse(data);
-    var promotion = {};
+    var promotions = {};
 
     if(e.type == 'message') {
-        promotion = business.getPromotion(data);
+        promotions = getVendorPromotions(data);
     } else if (e.type == 'new') {
         console.log(e);
         e.messages.forEach(function(f) {
-            promotion = business.getPromotion(data);
+            promotions = getVendorPromotions(data);
         });
     }
 
-    if (promotion) {
-        chat.emit('promotion', JSON.stringify(promotion));
+    for (var i = 0; i < promotions.length; i++) {
+        p = promotions[i];
+        chat.emit('promotion', JSON.stringify(p));
     }
 });
