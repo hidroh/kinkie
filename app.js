@@ -45,7 +45,7 @@ var chat = io.of('/chat').on('connection', function (socket) {
         var km = getDistance(client.latitude, client.longitude, jsonData.latitude, jsonData.longitude);
         if (jsonData.geo < 0 || km < jsonData.geo) {
             client.socket.emit('msg', data);
-            return 1;
+            return client.user_id != jsonData.user_id ? 1 : 0;
         }
 
         return 0;
@@ -73,7 +73,7 @@ var chat = io.of('/chat').on('connection', function (socket) {
             forward(client, jsonData, data);
         }
 
-        socket.emit('msg', JSON.stringify({'type': 'info', 'message': count - 1})); // exclude self
+        socket.emit('msg', JSON.stringify({'type': 'info', 'message': count}));
     });
 
     socket.on('promotion', function(data) {
