@@ -305,7 +305,15 @@
 						var from = new google.maps.LatLng(lat, lon);
 						var to   = new google.maps.LatLng(lat2, lon2);
 						dist = google.maps.geometry.spherical.computeDistanceBetween(from, to);
-						$(away).text(Math.ceil(dist) + 'm away');
+						dist = Math.ceil(dist);
+						
+						if(dist > 10000) {
+							$(away).html('<strong>' + Math.ceil(dist/1000) + 'km/</strong> away');
+						} else if(dist > 1000) {
+							$(away).html('<strong>' + (Math.round(dist / 100) / 10) + 'km</strong> away');
+						} else {
+							$(away).html('<strong>' + Math.ceil(dist) + 'm</strong> away');
+						}
 					}
 					var div = $('<div />').addClass('message').append(text).append(avatar).append(away);
 				}
