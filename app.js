@@ -17,10 +17,36 @@ var getDistance = function(lat1, lon1, lat2, lon2) {
 var activeUserSockets = {};
 var activeBotSockets = {};
 var chat = io.of('/chat').on('connection', function (socket) {
+
+    var parseJSON = function(jsonString, required) {
+        try {
+            data = JSON.parse(jsonString);
+            for (var i = 0; i < required.length; i++) {
+                if (!(required[i] in data)) {
+                    sendError('Missing ' + required[i]);
+                    return null;
+                }
+            };
+            console.log('Message validated');
+            return data;
+        } catch (e) {
+            sendError('Invalid JSON string');
+            return null;
+        }
+    };
+
+    var sendError = function(message) {
+        console.log('Error message sent to client');
+        socket.emit('error', {'message': message});
+    }
+
     console.log('Socket client connected');
     socket.on('new user', function(data) {
         console.log('New user joined');
-        data = JSON.parse(data);
+        data = parseJSON(data, ['latitude', 'longitude', 'user_id']);
+        if (!data) {
+            return;
+        }
         activeUserSockets[socket.id] = 
         {
             'latitude': data.latitude,
@@ -32,7 +58,11 @@ var chat = io.of('/chat').on('connection', function (socket) {
 
     socket.on('new business', function(data) {
         console.log('New business joined');
-        data = JSON.parse(data);
+        data = parseJSON(data, ['latitude', 'longitude']);
+        if (!data) {
+            return;
+        }
+
         activeBotSockets[socket.id] = 
         {
             'latitude': data.latitude,
@@ -53,7 +83,11 @@ var chat = io.of('/chat').on('connection', function (socket) {
 
     socket.on('msg', function(data) {
         console.log('Received message from user');
-        jsonData = JSON.parse(data);
+        jsonData = parseJSON(data, ['latitude', 'longitude', 'user_id', 'geo']);
+        if (!jsonData) {
+            return;
+        }
+
         var count = 0;
         console.log('Forward message to users within ' + jsonData.geo + 'km');
         for (var socketId in activeUserSockets) {
@@ -78,7 +112,11 @@ var chat = io.of('/chat').on('connection', function (socket) {
 
     socket.on('promotion', function(data) {
         console.log('Received promotion from business');
-        jsonData = JSON.parse(data);
+        jsonData = parseJSON(data, ['latitude', 'longitude', 'promotion_id', 'geo']);
+        if (!jsonData) {
+            return;
+        }
+
         console.log('Forward promotion to users within ' + jsonData.geo + 'km');
         for (var socketId in activeUserSockets) {
             client = activeUserSockets[socketId];

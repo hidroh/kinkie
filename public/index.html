@@ -198,6 +198,10 @@
 					enableChat();
 				});
 
+				chat.on('error', function(data) {
+					console.log('Error message from server: ' + data.message);
+				})
+
 				chat.on('msg', function(data, callback) {
 					e = JSON.parse(data);
 					
