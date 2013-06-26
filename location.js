@@ -17,18 +17,18 @@ module.exports = function() {
         global.remove(socketId);
     };
 
-    var get = function(socketId) {
+    var get = function(socketId, min) {
         var users = [];
         users = local.get(socketId);
-        if (users.length < MIN) {
+        if (users.length < min) {
             users = nearby.get(socketId);
         }
 
-        if (users.length < MIN) {
+        if (users.length < min) {
             users = global.get(socketId);
         }
 
-        if (users.length < MIN) {
+        if (users.length < min) {
             users = global.getAll();
         }
 
@@ -41,8 +41,6 @@ module.exports = function() {
         get: get
     };
 };
-
-var MIN = 10;
 
 var scope = function(degreeStep, distance) {
     var squares = {};
@@ -92,7 +90,7 @@ var scope = function(degreeStep, distance) {
 
     };
 
-    var get = function(socketId) {
+    var get = function(socketId, min) {
         var nearbySockets = [];
         if (!sockets[socketId]) {
             return [];
@@ -101,7 +99,7 @@ var scope = function(degreeStep, distance) {
         var gridSockets = getGridSockets(sockets[socketId].squareLat, sockets[socketId].squareLon);
 
         nearbySockets = filterByDistance(sockets[socketId], gridSockets);
-        if (nearbySockets.length < MIN) {
+        if (nearbySockets.length < min) {
             nearbySockets = gridSockets;
         }
 
