@@ -1,7 +1,7 @@
 module.exports = function() {
     var local, nearby, global;
 
-    local = new scope(0.01, 0.5);
+    local = new scope(0.01, 0.5); // 0.01 deg = 1km
     nearby = new scope(0.1, 5);
     global = new scope(1);
 
@@ -44,13 +44,13 @@ module.exports = function() {
 
 var MIN = 10;
 
-var scope = function(size, distance) {
+var scope = function(degreeStep, distance) {
     var squares = {};
     var sockets = {};
 
     var move = function(socketId, lat, lon) {
-        var squareLat = Math.round(lat / size) * size;
-        var squareLon = Math.round(lon / size) * size;
+        var squareLat = snapToGrid(lat);
+        var squareLon = snapToGrid(lon);
         var lastLat, lastLon;
         if (sockets[socketId]) {
             lastLat = sockets[socketId].squareLat;
@@ -94,23 +94,17 @@ var scope = function(size, distance) {
 
     var get = function(socketId) {
         var nearbySockets = [];
-        if (sockets[socketId]) {
-            var socket = sockets[socketId];
-            var squareLat = Math.round(socket.squareLat / size) * size;
-            var squareLon = Math.round(socket.squareLon / size) * size;
-            var squareSockets = getSquareSockets(squareLat, squareLon);
-            nearbySockets = getNearbySockets(socket, squareSockets);
-            if (nearbySockets.length < MIN) {
-                nearbySockets = squareSockets;
-            }
-
-            // try doubled size square
-            if (nearbySockets.length < MIN) {
-                nearbySockets.concat(getSquareSockets(squareLat + size, squareLon));
-                nearbySockets.concat(getSquareSockets(squareLat, squareLon + size));
-                nearbySockets.concat(getSquareSockets(squareLat + size, squareLon + size));
-            }
+        if (!sockets[socketId]) {
+            return [];
         }
+
+        var gridSockets = getGridSockets(sockets[socketId].squareLat, sockets[socketId].squareLon);
+
+        nearbySockets = filterByDistance(sockets[socketId], gridSockets);
+        if (nearbySockets.length < MIN) {
+            nearbySockets = gridSockets;
+        }
+
 
         return nearbySockets;
     };
@@ -124,20 +118,35 @@ var scope = function(size, distance) {
         return s;
     };
 
-    function getSquareSockets(squareLat, squareLon) {
+    function snapToGrid(degree) {
+        lastDigit = (degree / degreeStep) - Math.round(degree / degreeStep);
+        return (Math.floor(degree / degreeStep) + lastDigit / 2) * degreeStep;
+    }
+
+    function getGridSockets(centerLat, centerLon) {
         var s = [];
-        if (squares[squareLat] && squares[squareLat][squareLon]) {
-            for (var id in squares[squareLat][squareLon]) {
-                s.push(id);
+
+        var rect = [
+            [centerLat + degreeStep / 2, centerLon + degreeStep / 2],
+            [centerLat, centerLon + degreeStep / 2],
+            [centerLat + degreeStep / 2, centerLon],
+            [centerLat, centerLon]
+        ];
+
+        rect.forEach(function(coords) {
+            if (squares[coords[0]] && squares[coords[0]][coords[1]]) {
+                for (var id in squares[coords[0]][coords[1]]) {
+                    s.push(id);
+                }
             }
-        }
+        });
 
         return s;
     }
 
-    function getNearbySockets(socket, square) {
+    function filterByDistance(socket, gridSockets) {
         var s = [];
-        square.forEach(function(id) {
+        gridSockets.forEach(function(id) {
             var lat1 = socket.lat;
             var lon1 = socket.lon;
             var lat2 = sockets[id].lat;
