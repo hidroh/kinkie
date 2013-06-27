@@ -349,7 +349,8 @@
 				e = e.replace(/\(y\)/g, '<i class="icon icon-hand-right"></i>');
 				
 				p.html(e);
-
+				
+				$('#textbox').css('bottom', 0);
 				$("html, body").animate({ scrollTop: $(document).height() }, 200);
 
 				lastMessage = userid;
