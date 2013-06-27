@@ -22,20 +22,16 @@ module.exports = function() {
 
     var get = function(socketId, min) {
         var users = [];
-        console.log('Getting local sockets');
         users = local.get(socketId);
         if (users.length < min) {
-            console.log('Trying to get nearby sockets');
             users = nearby.get(socketId);
         }
 
         if (users.length < min) {
-            console.log('Trying to get global sockets');
             users = global.get(socketId);
         }
 
         if (users.length < min) {
-            console.log('Getting all sockets');
             users = global.getAll();
         }
 
@@ -109,6 +105,7 @@ var grid = function(precision, distance) {
         var gridSockets = getGridSockets(socketId, sockets[socketId].squareLat, sockets[socketId].squareLon);
 
         nearbySockets = filterByDistance(sockets[socketId], gridSockets);
+        console.log(distance + 'km [grid: ' + gridSockets.length + ', radius: ' + nearbySockets.length + ']');
         if (nearbySockets.length < min) {
             nearbySockets = gridSockets;
         }
@@ -161,7 +158,6 @@ var grid = function(precision, distance) {
             }
         });
 
-        console.log('Found ' + s.length + ' in grid');
         return s;
     }
 
@@ -169,16 +165,18 @@ var grid = function(precision, distance) {
         var s = [];
         var lat1 = socket.lat;
         var lon1 = socket.lon;
+        var log = '';
         gridSockets.forEach(function(id) {
             var lat2 = sockets[id].lat;
             var lon2 = sockets[id].lon;
             var km = geolib.getDistance({latitude: lat1, longitude: lon1}, {latitude: lat2, longitude: lon2}) / 1000;
-            console.log('Distance = ' + km + ' km');
+            log += ' ' + km;
             if (!distance || km <= distance) {
                 s.push(id);
             }
         });
 
+        if (log) console.log('{' + log + ' }');
         return s;
     }
 
