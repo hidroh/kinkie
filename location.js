@@ -1,3 +1,5 @@
+var geolib = require('geolib');
+
 module.exports = function() {
     var local, nearby, global;
 
@@ -46,7 +48,6 @@ module.exports = function() {
         get: get
     };
 };
-
 var grid = function(precision, distance) {
     var squares = {};
     var sockets = {};
@@ -105,7 +106,7 @@ var grid = function(precision, distance) {
             return [];
         }
 
-        var gridSockets = getGridSockets(sockets[socketId].squareLat, sockets[socketId].squareLon);
+        var gridSockets = getGridSockets(socketId, sockets[socketId].squareLat, sockets[socketId].squareLon);
 
         nearbySockets = filterByDistance(sockets[socketId], gridSockets);
         if (nearbySockets.length < min) {
@@ -139,7 +140,7 @@ var grid = function(precision, distance) {
         return Number(degree.toFixed(precision).toString().slice(0, -1)) + (Math.pow(10, -(precision - 1)) * 0.1 * snap);
     }
 
-    function getGridSockets(centerLat, centerLon) {
+    function getGridSockets(socketId, centerLat, centerLon) {
         var s = [];
 
         var degreeStep = Math.pow(10, -(precision - 1));
@@ -153,7 +154,9 @@ var grid = function(precision, distance) {
         rect.forEach(function(coords) {
             if (squares[coords[0]] && squares[coords[0]][coords[1]]) {
                 for (var id in squares[coords[0]][coords[1]]) {
-                    s.push(id);
+                    if (socketId != id) {
+                        s.push(id);
+                    }
                 }
             }
         });
@@ -169,21 +172,14 @@ var grid = function(precision, distance) {
         gridSockets.forEach(function(id) {
             var lat2 = sockets[id].lat;
             var lon2 = sockets[id].lon;
-            if (!distance || getDistance(lat1, lon1, lat2, lon2) <= distance) {
+            var km = geolib.getDistance({latitude: lat1, longitude: lon1}, {latitude: lat2, longitude: lon2}) / 1000;
+            console.log('Distance = ' + km + ' km');
+            if (!distance || km <= distance) {
                 s.push(id);
             }
         });
 
         return s;
-    }
-
-    function getDistance(lat1, lon1, lat2, lon2) {
-        var R = 6371; // km
-        var distance = Math.acos(Math.sin(lat1)*Math.sin(lat2) + 
-                          Math.cos(lat1)*Math.cos(lat2) *
-                          Math.cos(lon2-lon1)) * R;
-        console.log('Distance = ' + distance + ' km');
-        return distance;
     }
 
     return {
