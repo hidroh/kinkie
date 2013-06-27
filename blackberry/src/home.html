@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title></title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width">
+
+<link rel="stylesheet" href="css/bootstrap.css">
+<link rel="stylesheet" href="css/font-awesome/css/font-awesome.css">
+<link rel="stylesheet" href="css/main.css">
+
+<script src="js/vendor/jquery-1.9.1.js"></script>
+<script src="js/vendor/jquery.cookie.js"></script>
+<script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+</head>
+<body>
+    <div class="home-screen page">
+
+        <div style="text-align:center;position:relative;margin-top:-100px;top:50%;">
+            <img src="/img/logo.png" alt="" style="width:250px;">
+            <p style="color:#ffffff;">Talk to lovely people nearby.</p>
+            <button class="btn" style="background:#c0392b;" onclick="window.location='/select.html'; return false;">Join the fun!</button>
+        </div>
+
+    </div>
+
+    <script>
+
+        var noSocketSupport = false;
+
+        if(!("WebSocket" in window)) {
+            $('button').text('Boo! Unsupported Phone :(');
+            $('button').attr('disabled', 'disabled');
+            noSocketSupport = true;
+        }
+
+        $('button').text('We need to know where you are before starting a chat.');
+        $('button').attr('disabled', 'disabled');
+
+        if(navigator.geolocation != null) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                $('button').text('Join the fun');
+                $('button').attr('disabled', false);
+            }, function() {
+                // Unable to get current position
+            });
+        } else {
+            // No support for geolocation
+        }
+
+    </script>
+</body>
+</html>

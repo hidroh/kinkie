@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title></title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width">
+
+<link rel="stylesheet" href="css/bootstrap.css">
+<link rel="stylesheet" href="css/font-awesome/css/font-awesome.css">
+<link rel="stylesheet" href="css/main.css">
+
+<script src="js/vendor/jquery-1.9.1.js"></script>
+<script src="js/vendor/jquery.cookie.js"></script>
+<script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+</head>
+<body>
+<script src="http://maps.google.com/maps/api/js?sensor=true&libraries=geometry"></script>
+<div class="join-screen page">
+
+    <script type="text/javascript">
+        $(function() {
+            var user = JSON.parse($.cookie('user'));
+            $('#image').css('backgroundImage', "url('" + user.image + "')").find('i').css('opacity', '0');
+            $('#name').text(user.name);
+
+            $('.goto').click(function() {
+                window.location.href = '/chat';
+            });
+        });
+    </script>
+
+    <div style="text-align:center;position:relative;margin-top:-200px;height:400px;top:50%;width:300px;left:50%;margin-left:-150px;">
+        <h1 style="color:#ffffff;">Welcome</h1>
+        <div style="margin-top:50px;">
+            <div style="text-align:center;">
+                <div style="background:#2c3e50;display:inline-block;padding:35px 30px;width:130px;border-radius:100px;background-size:cover;" id="image">
+                    <i style="font-size:60px;color:#3498db;" class="icon-facebook"></i>
+                </div>
+            </div>
+        </div>
+        <h3 style="color:#ffffff;" id="name">Doctor Manhattan</h3>
+        <p style="color:#ffffff;">By clicking the button below, you agree to the non-existent privacy policy we have.</p>
+        <p><button class="goto btn" style="background:#f1c40f;color:#2c3e50;">Get Kinky!</button></p>
+    </div>    
+
+</div>
+</body>
+</html>

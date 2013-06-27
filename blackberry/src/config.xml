@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<widget xmlns="http://www.w3.org/ns/widgets" 
+    xmlns:rim="http://www.blackberry.com/ns/widgets"
+    version="1.0.0.0" id="HelloWorldApp">   
+   
+    <name>kinkie.im</name> 
+    <author>kinkie.im</author>
+    <description>Location-based instant messenger</description>
+    <icon src="icon.png"/>
+    <content src="index.html"/> 
+    <access uri ="*" subdomains="true"/>
+    <access uri ="http://kinkie.im:8080/" subdomains="true"/>
+    <rim:permissions> <rim:permit>read_geolocation</rim:permit> </rim:permissions>
+    <feature id="blackberry.app" >
+        <param name="websecurity" value="disable" />
+    </feature>
+</widget>
