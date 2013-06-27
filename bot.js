@@ -34,7 +34,14 @@ var initVendors = function() {
         "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-frc3/373478_50245567013_320421372_q.jpg",
         {"lunch": "Awesome mcdonald's promotion alabama"}
     );
-    vendors = [starbucks, mcdonalds];
+    var hnm = new business();
+    hnm.init(
+        1.2931,
+        103.8558,
+        "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-prn1/1063679_21415640912_1996587499_q.jpg",
+        {"panty": "Awesome H&M's promotion alabama"}
+    );
+    vendors = [starbucks, mcdonalds, hnm];
 };
 
 var combinePromotions = function(data) {
