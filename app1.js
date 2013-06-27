@@ -4,8 +4,8 @@ io.set('log level', 1); // reduce logging
 
 var location = new location();
 
-var activeUserSockets = {};
-// var activeBotSockets = {};
+var users = {};
+var businesses = {};
 var chat = io.of('/chat').on('connection', function (socket) {
 
     var parseJSON = function(jsonString, required) {
@@ -37,7 +37,7 @@ var chat = io.of('/chat').on('connection', function (socket) {
         if (!data) {
             return;
         }
-        activeUserSockets[socket.id] = 
+        users[socket.id] = 
         {
             'socket': socket,
             'user_id': data.user_id
@@ -45,41 +45,70 @@ var chat = io.of('/chat').on('connection', function (socket) {
         location.move(socket.id, data.latitude, data.longitude);
     });
 
-    var forward = function(client, jsonData, data) {
-        client.socket.emit('msg', data);
-        return client.user_id != jsonData.user_id ? 1 : 0;
-    };
+    socket.on('new business', function(data) {
+        console.log('New business joined');
+        data = parseJSON(data, ['latitude', 'longitude']);
+        if (!data) {
+            return;
+        }
+
+        businesses[socket.id] = 
+        {
+            'latitude': data.latitude,
+            'longitude': data.longitude,
+            'socket': socket,
+        };
+    });
 
     socket.on('msg', function(data) {
         console.log('Received message from user');
-        jsonData = parseJSON(data, ['latitude', 'longitude', 'user_id', 'geo']);
+        jsonData = parseJSON(data, ['latitude', 'longitude', 'user_id']);
         if (!jsonData) {
             return;
         }
 
         var count = 0;
-        console.log('Forward message to users within ' + jsonData.geo + 'km');
         var nearby = location.get(socket.id, 10);
         nearby.forEach(function(socketId) {
-            if (!activeUserSockets[socketId]) {
+            if (!users[socketId]) {
                 return;
             }
 
-            client = activeUserSockets[socketId];
+            client = users[socketId];
             if (socketId == socket.id) {
                 location.move(socket.id, jsonData.latitude, jsonData.longitude);
+            } else {
+                count++;
             }
 
-            count += forward(client, jsonData, data);
+            client.socket.emit('msg', data);
         });
 
+        console.log('Forwarded message to ' + count + ' users');
         socket.emit('msg', JSON.stringify({'type': 'info', 'message': count}));
+
+        for (var socketId in businesses) {
+            businesses[socketId].socket.emit('msg', JSON.stringify({'message': jsonData.message, 'socket_id': socket.id }));
+        }
+    });
+
+    socket.on('promotion', function(data) {
+        console.log('Received promotion from business');
+        jsonData = parseJSON(data, ['latitude', 'longitude', 'promotion_id']);
+        if (!jsonData) {
+            return;
+        }
+
+        console.log(users);
+        console.log(jsonData.promotion_id);
+        users[jsonData.promotion_id].socket.emit('msg', data);
+        console.log('Forwarded promotion to user');
     });
 
     socket.on('disconnect', function() {
-        delete activeUserSockets[socket.id];
+        delete users[socket.id];
+        delete businesses[socket.id];
         location.remove(socket.id);
-        // delete activeBotSockets[socket.id];
         console.log('Socket client disconnected');
     });
 });
