@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<title></title>
+<title>Talk with lovely people nearby &mdash; Kinkie.im</title>
 <meta name="description" content="">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -358,8 +358,8 @@
 				$('#textbox').css('bottom', 0);
 				$("html, body").animate({ scrollTop: $(document).height() }, 200);
 
-				text.find('.dateago').remove();
-				$('<div/>').addClass('dateago').text($.timeago(new Date())).attr('title', new Date()).appendTo(text);
+				div.find('.text').find('.dateago').remove();
+				$('<div/>').addClass('dateago').text($.timeago(new Date())).attr('title', new Date().toISOString()).appendTo(div.find('.text'));
 
 				lastMessage = userid;
 			}
@@ -372,6 +372,13 @@
 		
 		displayPage('home');
 		handleHomePage();
+
+		setInterval(function() {
+			$('.dateago').each(function(i, e) {
+				var date = $.timeago($(this).attr('title'));
+				$(this).text(date);
+			});
+		}, 10000);
 		
 	});
 	
