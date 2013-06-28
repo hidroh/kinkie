@@ -23,35 +23,34 @@
 <div id="fb-root"></div>
 
 <script>
-    var url = 'https://www.facebook.com/dialog/oauth?client_id=461663813917591&redirect_uri=http://kinkie.im/success.html';
-    childWindow = window.open(url, '_blank');
+    // Copypasta from http://stackoverflow.com/questions/1403888/get-url-parameter-with-jquery
+    function getURLParameter(name) {
+       return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
+    }
 
-    // evaluate the url every second, when facebook redirects to our callback url, the following if statements gets fired
-    window.int = self.setInterval(function() {
-       var currentURL = childWindow.window.location.href;
-       var callbackURL = facebookOptions.redirectUri;
-       var inCallback = currentURL.indexOf(callbackURL);
+    if(!getURLParameter('access_token')) {
+      var url = 'https://www.facebook.com/dialog/oauth?client_id=461663813917591&redirect_uri=http://kinkie.im/success';
+      childWindow = window.open(url, '_self');
+    // } else {
+    } else {
+      //user is already logged in and connected
+      var fbMeUrl = 'https://graph.facebook.com/me?access_token=' + getURLParameter('access_token');
+      $.get(fbMeUrl, function(response) {
+        var user = {
+            "type": "user",
+            "id": response.id,
+            "username": response.username,
+            "name": response.first_name + ' ' + response.last_name,
+            "gender": response.gender,
+            "image": "https://graph.facebook.com/" + response.id + "/picture",
+        }
 
-       // location has changed to our callback url, parse the oauth code
-       if(inCallback == 0) {
-
-          // stop the interval from checking for url changes 
-          window.clearInterval(int)
-
-          // parse the oauth code
-          var code = childWindow.window.location.search;
-          code = code.split('code=');
-          code = code[1];
-          window.authCode = code;
-
-          // close the childWindow
-          childWindow.close();
-
-          setTimeout(function() {
-             alert('done');
-          }, 1000);
-       }
-    }, 1000);
+        // conn.send(JSON.stringify(user));
+        localStorage.setItem('user', JSON.stringify(user));
+        $.cookie('user', JSON.stringify(user));
+        window.location.href = '/join.html';
+      });
+    }
  
 
 // window.fbAsyncInit = function() {

@@ -7,8 +7,11 @@
     <author>kinkie.im</author>
     <description>Location-based instant messenger</description>
     <icon src="icon.png"/>
-    <content src="index.html"/> 
+    <content src="home.html"/> 
     <access uri ="*" subdomains="true"/>
+    <access uri ="https://graph.facebook.com" subdomains="true"/>
+    <access uri ="https://www.facebook.com" subdomains="true"/>
+    <access uri ="http://kinkie.im" subdomains="true"/>
     <access uri ="http://kinkie.im:8080/" subdomains="true"/>
     <rim:permissions> <rim:permit>read_geolocation</rim:permit> </rim:permissions>
     <feature id="blackberry.app" >

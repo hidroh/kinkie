@@ -27,7 +27,6 @@
     </div>
 
     <script>
-
         var noSocketSupport = false;
 
         if(!("WebSocket" in window)) {
@@ -43,6 +42,10 @@
             navigator.geolocation.getCurrentPosition(function(position) {
                 $('button').text('Join the fun');
                 $('button').attr('disabled', false);
+                if (localStorage.getItem('user')) {
+                    $.cookie('user', localStorage.getItem('user'));
+                    window.location.href = '/join.html';
+                }
             }, function() {
                 // Unable to get current position
             });

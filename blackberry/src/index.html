@@ -19,7 +19,7 @@
 <script src="http://maps.google.com/maps/api/js?sensor=true&libraries=geometry"></script>
 
 <script src="./js/vendor/jquery.textarea-expander.js"></script>
-<script src="socket.io.js"></script>
+<script src="http://kinkie.im:8080/socket.io/socket.io.js"></script>
 
 
 <script type="text/javascript">
@@ -30,21 +30,11 @@
    var lastMessage;
    var watchId;
    var chat = io.connect('http://kinkie.im:8080/chat');
-   var joining = false;
-   
    lat = 1.2931;
    lon = 103.8558;
+
    $(document).ready(function() {
-       var user = {
-         "type": "user",
-         "id": Math.random(),
-         "username": 'blackberry',
-         "name": 'blackberry',
-         "gender": 'male',
-         "image": "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-frc3/592325_160026570261_650844137_q.jpg",
-      }
       
-     
       // Copypasta from http://stackoverflow.com/questions/1403888/get-url-parameter-with-jquery
       function getURLParameter(name) {
          return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
@@ -63,7 +53,6 @@
          
          $('div.page.home-screen button#join').click(function() {
             displayPage('join');
-            auth();
          });
          
          $('div.page.home-screen button#join').text('Could not detect your location! :(');
@@ -182,6 +171,8 @@
 
             var initChat = function(lat, lon) {
                if (lat != null && lon != null && !connected) {
+                  var user = JSON.parse($.cookie('user'));
+
                   chat.emit('new user', JSON.stringify({
                      'type': 'new',
                      'user_id': user.id,
@@ -209,6 +200,10 @@
                enableChat();
             });
 
+            chat.on('error', function(data) {
+               console.log('Error message from server: ' + data.message);
+            })
+
             chat.on('msg', function(data, callback) {
                e = JSON.parse(data);
                
@@ -225,6 +220,13 @@
                   });
                }
             });
+            
+            watchId = navigator.geolocation.watchPosition(function(position) {
+               console.log("Location updated.");
+               lat = position.coords.latitude;
+               lon = position.coords.longitude;
+               // initChat(lat, lon);
+            }, function() {}, {timeout: 60000});
             
             // send a message
             $('.textbox textarea').keypress(function() {
@@ -251,6 +253,14 @@
                addMessage(false, text, chat);
                $('.textbox #text').val('');
             });
+            
+            navigator.geolocation.getCurrentPosition(function(position) {
+               console.log("Location determined");
+               lat = position.coords.latitude;
+               lon = position.coords.longitude;
+               initChat(lat, lon);
+            });
+            
          } catch(e) {
             disableChat();
          }
@@ -267,6 +277,7 @@
       }
       
       function addMessage(displayed, e, conn, image, lat2, lon2, userid, gender) {
+         var user = JSON.parse($.cookie('user'));
          var message = {
             "type": 'message',
             "user_id": user.id,
@@ -312,7 +323,7 @@
                   dist = Math.ceil(dist);
                   
                   if(dist > 10000) {
-                     $(away).html('<strong>' + Math.ceil(dist/1000) + 'km/</strong> away');
+                     $(away).html('<strong>' + Math.ceil(dist/1000) + 'km</strong> away');
                   } else if(dist > 1000) {
                      $(away).html('<strong>' + (Math.round(dist / 100) / 10) + 'km</strong> away');
                   } else {
@@ -340,7 +351,8 @@
             e = e.replace(/\(y\)/g, '<i class="icon icon-hand-right"></i>');
             
             p.html(e);
-
+            
+            $('#textbox').css('bottom', 0);
             $("html, body").animate({ scrollTop: $(document).height() }, 200);
 
             lastMessage = userid;
@@ -352,10 +364,9 @@
          }
       }
       
-      // displayPage('home');
-      // handleHomePage();
-      displayPage('chat');
-      handleChatPage();
+      displayPage('home');
+      handleHomePage();
+      
    });
    
 </script>
@@ -367,7 +378,7 @@
    <div class="home-screen page">
       
       <div style="text-align:center;position:relative;margin-top:-100px;top:50%;">
-         <img src="img/logo.png" alt="" style="width:250px;">
+         <img src="./img/logo.png" alt="" style="width:250px;">
          <p style="color:#ffffff;">Talk to lovely people nearby.</p>
          <button id="join" class="btn" style="background:#c0392b;">Join the fun!</button>
          
@@ -382,70 +393,41 @@
       
    </div>
    
-   <!--- Join screen -->
+   <!-- Join screen -->
    
    <div class="join-screen page" style="display: none;">
 
       <div id="fb-root"></div>
 
       <script>
-         var auth = function() {
-            var url = 'https://www.facebook.com/dialog/oauth?client_id=461663813917591&redirect_uri=http://kinkie.im/success.html?url=' + window.location.href + '?chat=now';
-            childWindow = window.open(url, '_blank');
 
-            // evaluate the url every second, when facebook redirects to our callback url, the following if statements gets fired
-            window.int = self.setInterval(function() {
-               var currentURL = childWindow.window.location.href;
-               var callbackURL = facebookOptions.redirectUri;
-               var inCallback = currentURL.indexOf(callbackURL);
-
-               // location has changed to our callback url, parse the oauth code
-               if(inCallback == 0) {
-
-                  // stop the interval from checking for url changes 
-                  window.clearInterval(int)
-
-                  // parse the oauth code
-                  var code = childWindow.window.location.search;
-                  code = code.split('code=');
-                  code = code[1];
-                  window.authCode = code;
-
-                  // close the childWindow
-                  childWindow.close();
-
-                  setTimeout(function() {
-                     alert('done');
-                  }, 1000);
-               }
-            }, 1000);
-         }
-         // window.fbAsyncInit = function() {
+         window.fbAsyncInit = function() {
             
-         //    FB.init({
-         //       appId: '461663813917591', 
-         //       status: true, 
-         //       cookie: true,
-         //       xfbml: true,
-         //       oauth: true
-         //    });
+            FB.init({
+               appId: '461663813917591', 
+               status: true, 
+               cookie: true,
+               xfbml: true,
+               oauth: true
+            });
             
-         //    // run once with current status and whenever the status changes
-         //    FB.getLoginStatus(updateButton);
+            // run once with current status and whenever the status changes
+            FB.getLoginStatus(updateButton);
             
-         // };
+         };
          
-         // (function() {
-         //   var e = document.createElement('script'); e.async = true;
-         //   e.src = 'http://connect.facebook.net/en_US/all.js';
-         //   document.getElementById('fb-root').appendChild(e);
-         // }());
+         (function() {
+           var e = document.createElement('script'); e.async = true;
+           e.src = document.location.protocol 
+            + '//connect.facebook.net/en_US/all.js';
+           document.getElementById('fb-root').appendChild(e);
+         }());
 
       </script>
 
       <div style="text-align:center;position:relative;margin-top:-200px;height:400px;top:50%;width:300px;left:50%;margin-left:-150px;">
          
-         <img src="img/logo.png" alt="" style="width:250px;">
+         <img src="/img/logo.png" alt="" style="width:250px;">
          <p style="color:#ffffff;">Go on.. choose one</p>
          <div style="margin-top:30px;">
             <div style="width:100%;float:left;text-align:center;">

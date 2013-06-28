@@ -237,36 +237,25 @@
     }
 </script>
 
-<div class="chat-screen page">
-
-    <p id="topinfo" class="btn btn-mini" style="display:none;font-size:11px;position:fixed;top:15px;left:10px;z-index:200;">Talking with <span>0</span> people right now.</p>
-
-    <a id="lockmein" href="javascript:;" class="btn" style="display:none;position:fixed;top:10px;right:10px;z-index:1000;"><span>Lock me in this position.</span> <i class="icon-unlock-alt"></i></a>
-
-    <div id="messagebox">
-
-        <div id="noone" style="margin-top:-12px;position:absolute;width:100%;color:#c0c0c0;text-align:center;font-size:28px;">It's lonely in here <i class="icon-meh"></i><p style="font-size:15px;">Why not say something to start a conversation</p></div>
-
-    </div>
-
-
-    <div class="textbox">
-        <div class="smilies">
-            <button class="btn" data-smily=":)"><i class="icon-smile"></i></button>
-            <button class="btn" data-smily=":|"><i class="icon-meh"></i></button>
-            <button class="btn" data-smily=":("><i class="icon-frown"></i></button>
-            <button class="btn" data-smily="<3"><i class="icon-heart"></i></button>
-            <button class="btn" data-smily="(y)"><i class="icon-hand-right"></i></button>
-        </div>
-        <div class="textbar">
-            <button id="btnGeo" class="btn geo" title="Next door" style="position:absolute;top:0;left:0;width:50px;margin:10px;font-size:20px;"><i id="icon-geo" class="icon-map-marker"></i></button>
-            <button class="btn smily" style="position:absolute;top:0;left:60px;width:50px;margin:10px;font-size:20px;"><i class="icon-smile"></i></button>
-            <textarea id="text" placeholder="Your kinky thoughts go here..." style="margin:10px 80px;min-height:32px;height:32px;padding:6px 9px !important;"></textarea>
+   <div class="chat-screen page">
+      
+      <p id="topinfo" class="btn btn-mini" style="display:none;font-size:11px;position:fixed;top:15px;left:10px;z-index:200;">Talking with <span>0</span> people right now.</p>
+      
+      <div id="messagebox">
+         
+         <div id="noone" style="margin-top:-12px;position:absolute;width:100%;color:#c0c0c0;text-align:center;font-size:28px;">It's lonely in here <i class="icon-meh"></i><p style="font-size:15px;">Why not say something to start a conversation</p></div>
+         
+      </div>
+      
+      
+      <div class="textbox">
+         <div class="textbar">
+            <textarea id="text" placeholder="Your kinky thoughts go here..." style="margin:10px 0px;min-height:32px;height:32px;padding:6px 9px !important;"></textarea>
             <button class="btn send" style="position:absolute;top:0;right:0;width:90px;margin:10px;">Send <i class="icon-heart"></i></button>
-        </div>
-    </div>
-
-</div>
+         </div>
+      </div>
+      
+   </div>
 
 <script>
     $(function($) {

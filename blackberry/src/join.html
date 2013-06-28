@@ -25,8 +25,9 @@
             $('#image').css('backgroundImage', "url('" + user.image + "')").find('i').css('opacity', '0');
             $('#name').text(user.name);
 
+            $('.goto').removeAttr('disabled');
             $('.goto').click(function() {
-                window.location.href = '/chat';
+                window.location.href = '/chat.html';
             });
         });
     </script>
@@ -40,9 +41,9 @@
                 </div>
             </div>
         </div>
-        <h3 style="color:#ffffff;" id="name">Doctor Manhattan</h3>
+        <h3 style="color:#ffffff;" id="name"></h3>
         <p style="color:#ffffff;">By clicking the button below, you agree to the non-existent privacy policy we have.</p>
-        <p><button class="goto btn" style="background:#f1c40f;color:#2c3e50;">Get Kinky!</button></p>
+        <p><button class="goto btn" style="background:#f1c40f;color:#2c3e50;" disabled="disabled">Get Kinky!</button></p>
     </div>    
 
 </div>
