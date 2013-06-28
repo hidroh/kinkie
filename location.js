@@ -151,9 +151,7 @@ var grid = function(precision, distance) {
         rect.forEach(function(coords) {
             if (squares[coords[0]] && squares[coords[0]][coords[1]]) {
                 for (var id in squares[coords[0]][coords[1]]) {
-                    if (socketId != id) {
-                        s.push(id);
-                    }
+                    s.push(id);
                 }
             }
         });
