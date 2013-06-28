@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>Kinkie Team &lt;3</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width">
+
+<link rel="stylesheet" href="/css/bootstrap.css">
+<link rel="stylesheet" href="/css/font-awesome/css/font-awesome.css">
+<link rel="stylesheet" href="/css/main.css">
+
+<script src="/js/vendor/jquery-1.9.1.js"></script>
+<script src="/js/vendor/jquery.cookie.js"></script>
+<script src="/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+</head>
+<body>
+<!--
+we did not intend to make good code. we intend to make funny code. so we apologize for the
+unclean and super unprofessional work we had coded into this piece of....
+-->
+
+	
+	<div class="home-screen page">
+		
+		<div style="text-align:center;position:relative;margin-top:100px;font-family:Arial;">
+			<img src="/img/logo.png" alt="" style="width:250px;">
+			<p style="color:#ffffff;margin-bottom:50px;">Meet an awesome team of totally normal people</p>
+			<div style="display:inline-block;width:150px;text-align:center;vertical-align:top;">
+				<div style="background:#2c3e50;display:block;height:100px;width:100px;margin:0 auto;border-radius:100px;background-image:url('http://gravatar.com/avatar/2526947459514fc0022f5fe446c57757.png?s=100')"></div>
+				<p style="margin-top:20px;"><strong>John "Jamoy" Rocela</strong></p>
+				<p>Creative direction</p>
+			</div>
+			<div style="display:inline-block;width:150px;text-align:center;vertical-align:top;">
+				<div style="background:#2c3e50;display:block;height:100px;width:100px;margin:0 auto;border-radius:100px;background-image:url('http://graph.facebook.com/517349549/picture?type=square&width=130')"></div>
+				<p style="margin-top:20px;"><strong>Nico Hiort af Ornäs</strong></p>
+				<p>Concept development</p>
+			</div>
+			<div style="display:inline-block;width:150px;text-align:center;vertical-align:top;">
+				<div style="background:#2c3e50;display:block;height:100px;width:100px;margin:0 auto;border-radius:100px;background-image:url('http://graph.facebook.com/715968029/picture?type=square&width=100')"></div>
+				<p style="margin-top:20px;"><strong>Duong Dang Chien</strong></p>
+				<p>Mobile application development</p>
+			</div>
+			<div style="display:inline-block;width:150px;text-align:center;vertical-align:top;">
+				<div style="background:#2c3e50;display:block;height:100px;width:100px;margin:0 auto;border-radius:100px;background-image:url('http://gravatar.com/avatar/927a4b12ae0d94c2c13f60fded2a98bf.png?s=100')"></div>
+				<p style="margin-top:20px;"><strong>Ha Duy Trung</strong></p>
+				<p>Network programming</p>
+			</div>
+			<div style="display:inline-block;width:150px;text-align:center;vertical-align:top;">
+				<div style="background:#2c3e50;display:block;height:100px;width:100px;margin:0 auto;border-radius:100px;background-image:url('http://graph.facebook.com/1105074664/picture?type=square&width=100')"></div>
+				<p style="margin-top:20px;"><strong>Balamurugan Mohandossgandhi</strong></p>
+				<p>Backend development</p>
+			</div>
+			<div style="display:inline-block;width:150px;text-align:center;vertical-align:top;">
+				<div style="background:#2c3e50;display:block;height:100px;width:100px;margin:0 auto;border-radius:100px;background-image:url('http://graph.facebook.com/scalopus/picture?width=100&type=square')"></div>
+				<p style="margin-top:20px;"><strong>Warun Kietduriyakul</strong></p>
+				<p>Scalability engineering</p>
+			</div>
+		</div>
+		
+	</div>
+	
+	<script>
+		
+		var noSocketSupport = false;
+		
+		if(!("WebSocket" in window)) {
+			$('button').text('Boo! Unsupported Phone :(');
+			$('button').attr('disabled', 'disabled');
+			noSocketSupport = true;
+		}
+		
+		$('button').text('We need to know where you are before starting a chat.');
+		$('button').attr('disabled', 'disabled');
+		
+		if(navigator.geolocation != null) {
+			navigator.geolocation.getCurrentPosition(function(position) {
+				$('button').text('Join the fun');
+				$('button').attr('disabled', false);
+			}, function() {
+				// Unable to get current position
+			});
+		} else {
+			// No support for geolocation
+		}
+		
+	</script>
+	
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-41490461-1', 'kinkie.im');
+	  ga('send', 'pageview');
+
+	</script>
+
+</body>
+</html>
