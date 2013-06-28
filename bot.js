@@ -25,21 +25,21 @@ var initVendors = function() {
         1.2931,
         103.8558,
         "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/276812_22092443056_333388977_q.jpg",
-        {"coffee": "Awesome starbucks promotion alabama"}
+        {"coffee": "Come to Starbucks for 10% discount for kinkie.im users!"}
     );
     var mcdonalds = new business();
     mcdonalds.init(
         1.2931,
         103.8558,
         "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-frc3/373478_50245567013_320421372_q.jpg",
-        {"lunch": "Awesome mcdonald's promotion alabama"}
+        {"lunch": "Flash your kinkie.im app for free chicken nugget!"}
     );
     var hnm = new business();
     hnm.init(
         1.2931,
         103.8558,
         "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-prn1/1063679_21415640912_1996587499_q.jpg",
-        {"panty": "Awesome H&M's promotion alabama"}
+        {"clothes": "Choose H&M for a wide range of summer clothes. Show off your kinkie side in store for promotions!"}
     );
     vendors = [starbucks, mcdonalds, hnm];
 };

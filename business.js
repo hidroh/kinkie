@@ -15,9 +15,9 @@ module.exports = function() {
         var now = new Date().getTime() / 1000; // in seconds
         if (userMessage.socket_id in this.seen) {
             var lastSeen = this.seen[userMessage.socket_id];
-            // if (now - lastSeen <= 60) {
-                // return;
-            // }
+            if (now - lastSeen <= 60) {
+                return;
+            }
         } else {
             this.seen[userMessage.socket_id] = now;
         }
