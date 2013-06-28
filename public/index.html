@@ -355,7 +355,7 @@
 				
 				p.html(e);
 				
-				$('#textbox').css('bottom', 0);
+				$('#textbox').css('bottom', $(document).height());
 				$("html, body").animate({ scrollTop: $(document).height() }, 200);
 
 				div.find('.text').find('.dateago').remove();
