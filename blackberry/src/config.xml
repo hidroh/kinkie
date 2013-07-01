@@ -7,7 +7,7 @@
     <author>kinkie.im</author>
     <description>Location-based instant messenger</description>
     <icon src="icon.png"/>
-    <content src="home.html"/> 
+    <content src="index.html"/> 
     <access uri ="*" subdomains="true"/>
     <access uri ="https://graph.facebook.com" subdomains="true"/>
     <access uri ="https://www.facebook.com" subdomains="true"/>

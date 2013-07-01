@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<title></title>
+<title>Talk with lovely people nearby &mdash; Kinkie.im</title>
 <meta name="description" content="">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -11,365 +11,6 @@
 <link rel="stylesheet" href="./css/bootstrap.css">
 <link rel="stylesheet" href="./css/font-awesome/css/font-awesome.css">
 <link rel="stylesheet" href="./css/main.css">
-
-<script src="./js/vendor/jquery-1.9.1.js"></script>
-<script src="./js/vendor/jquery.cookie.js"></script>
-<script src="./js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
-
-<script src="http://maps.google.com/maps/api/js?sensor=true&libraries=geometry"></script>
-
-<script src="./js/vendor/jquery.textarea-expander.js"></script>
-<script src="http://kinkie.im:8080/socket.io/socket.io.js"></script>
-
-
-<script type="text/javascript">
-   
-   var updateButton;
-   
-   var lat, lon, connected;
-   var lastMessage;
-   var watchId;
-   var chat = io.connect('http://kinkie.im:8080/chat');
-   lat = 1.2931;
-   lon = 103.8558;
-
-   $(document).ready(function() {
-      
-      // Copypasta from http://stackoverflow.com/questions/1403888/get-url-parameter-with-jquery
-      function getURLParameter(name) {
-         return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
-      }
-      
-      function displayPage(page) {
-         
-         $('div.page').hide();
-         $('div.page.' + page + '-screen').show();
-         
-      }
-      
-      // ---------------------- Home page ----------------------
-      
-      function handleHomePage() {
-         
-         $('div.page.home-screen button#join').click(function() {
-            displayPage('join');
-         });
-         
-         $('div.page.home-screen button#join').text('Could not detect your location! :(');
-         $('div.page.home-screen button#join').attr('disabled', 'disabled');
-         
-         if(navigator.geolocation != null) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-               $('div.page.home-screen button#join').text('Join the fun');
-               $('div.page.home-screen button#join').attr('disabled', false);
-               
-               if(getURLParameter('chat') == 'now') {
-                  $('div.page.home-screen button#join').trigger('click');
-               }
-            }, function() {
-               // Unable to get current position
-            });
-         } else {
-            // No support for geolocation
-         }
-         
-      }
-      
-      // ---------------------- Profile page ----------------------
-      
-      function handleProfilePage() {
-      
-         var user = JSON.parse($.cookie('user'));
-         $('div.page.profile-screen #image').css('backgroundImage', "url('" + user.image + "')").find('i').css('opacity', '0');
-         $('div.page.profile-screen #name').text(user.name);
-
-         $('div.page.profile-screen .goto').click(function() {
-            handleChatPage();
-            displayPage('chat');
-         });
-         
-         if(getURLParameter('chat') == 'now') {
-            $('div.page.profile-screen .goto').trigger('click');
-         }
-         
-         $('div.page.profile-screen .logout').click(function() {
-            FB.logout(function(response) {
-               // User is logged out.
-               $.cookie('user', null);
-            });
-            displayPage('join');
-         });
-      
-      }
-      
-      updateButton = function updateButton(response) {
-         
-         if (response.authResponse) {
-            
-            //user is already logged in and connected
-            FB.api('/me', function(response) {
-               var user = {
-                  "type": "user",
-                  "id": response.id,
-                  "username": response.username,
-                  "name": response.first_name + ' ' + response.last_name,
-                  "gender": response.gender,
-                  "image": "https://graph.facebook.com/" + response.id + "/picture",
-               }
-               
-               $.cookie('user', JSON.stringify(user));
-               displayPage('profile');
-               handleProfilePage();
-            });
-            
-         } else {
-         
-            // user is not connected to your app or logged out
-            $('#fb').click(function() {
-               FB.login(function(response) {
-                  if (response.authResponse) {
-                     FB.api('/me', function(response) {
-                        var user = {
-                           "type": "user",
-                           "id": response.id,
-                           "username": response.username,
-                           "name": response.first_name + ' ' + response.last_name,
-                           "gender": response.gender,
-                           "image": "https://graph.facebook.com/" + response.id + "/picture",
-                        }
-                        
-                        $.cookie('user', JSON.stringify(user));
-                        displayPage('profile');
-                        handleProfilePage();
-                     });    
-                  } else {
-                     //user cancelled login or did not grant authorization
-                  }
-               }, {scope:'email'});   
-               return false; 
-            });
-        
-         }
-      }
-      
-      // ---------------------- Chat page ----------------------
-      
-      function handleChatPage() {
-         
-         if (!window.console) console = {log: function() {}};
-         var disableChat = function() {
-            $('.textbox > *').attr('disabled');
-            $('#noone').html('We couldn\'t reach anyone <i class="icon-frown"></i>');
-         };
-         
-         var enableChat = function() {
-            $('.textbox > *').removeAttr('disabled');
-            $('#noone').html('It\'s lonely in here <i class="icon-meh"></i><p style="font-size:15px;">Why not say something to start a conversation</p>');
-         }
-         
-         try {
-
-            var initChat = function(lat, lon) {
-               if (lat != null && lon != null && !connected) {
-                  var user = JSON.parse($.cookie('user'));
-
-                  chat.emit('new user', JSON.stringify({
-                     'type': 'new',
-                     'user_id': user.id,
-                     'latitude': lat,
-                     'longitude': lon
-                  }));
-                  connected = true;
-                  console.log('Chat initiated.');
-               }
-            };
-
-            chat.on('connect', function () {
-               console.log("Connection established!");
-               initChat(lat, lon);
-            });
-
-            chat.on('disconnect', function() {
-               console.log('Connection lost.');
-               connected = false;
-               disableChat();
-            })
-
-            chat.on('reconnect', function() {
-               console.log('Reconnected!');
-               enableChat();
-            });
-
-            chat.on('error', function(data) {
-               console.log('Error message from server: ' + data.message);
-            })
-
-            chat.on('msg', function(data, callback) {
-               e = JSON.parse(data);
-               
-               if(e.type == 'message') {
-                  addMessage(true, e.message, null, e.image, e.latitude, e.longitude, e.user_id, e.gender);
-               } else if(e.type == 'info') {
-                  $('#topinfo').show();
-                  $('#topinfo span').text(e.message);
-                  setTimeout("$('#topinfo').fadeOut(500)", 5000);
-               } else if (e.type == 'new') {
-                  console.log(e);
-                  e.messages.forEach(function(f) {
-                     addMessage(true, f.message, null, f.image, f.latitude, f.longitude, f.user_id, f.gender);
-                  });
-               }
-            });
-            
-            watchId = navigator.geolocation.watchPosition(function(position) {
-               console.log("Location updated.");
-               lat = position.coords.latitude;
-               lon = position.coords.longitude;
-               // initChat(lat, lon);
-            }, function() {}, {timeout: 60000});
-            
-            // send a message
-            $('.textbox textarea').keypress(function() {
-               if ($(this).val() != '') {
-                  $('.send').attr('disabled', false);
-               } else {
-                  $('.send').attr('disabled', true);
-               }
-            }).keypress(function(e) {
-               var text = $(this).val();
-               if (e.which == 13 && text) {
-                  addMessage(false, text, chat);
-                  $('.textbox #text').val('');
-                  e.preventDefault(true);
-                  return; 
-               } else if(e.which == 13) {
-                  e.preventDefault(true);
-                  return;
-               }
-            });
-            
-            $('.btn.send').click(function() {
-               var text = $('.textbox #text').val();
-               addMessage(false, text, chat);
-               $('.textbox #text').val('');
-            });
-            
-            navigator.geolocation.getCurrentPosition(function(position) {
-               console.log("Location determined");
-               lat = position.coords.latitude;
-               lon = position.coords.longitude;
-               initChat(lat, lon);
-            });
-            
-         } catch(e) {
-            disableChat();
-         }
-         
-         if ($('.message').length > 0) {
-            $('#noone').hide();
-            $('.message').addClass('show');
-         } else {
-            $('#noone').addClass('go');
-         }
-
-         $('.textbox #text').TextAreaExpander(0, 60);
-         
-      }
-      
-      function addMessage(displayed, e, conn, image, lat2, lon2, userid, gender) {
-         var user = JSON.parse($.cookie('user'));
-         var message = {
-            "type": 'message',
-            "user_id": user.id,
-            "latitude": lat,
-            "longitude": lon,
-            "message": e,
-            "image": image || user.image,
-            "gender": gender || user.gender,
-            "geo": -1
-         }
-
-         if (displayed) {
-            gender = gender || user.gender;
-
-            userid = userid || user.id;
-
-            var image = image || user.image;
-
-            e = e.replace(/^\s+|\s+$/g, '');
-            if (e == '') {
-               $('.textbox #text').val('');
-               return;
-            }
-
-            $('#noone').fadeOut(function() {
-               $(this).remove();
-            });
-
-            var p = $('<p/>').text(e);
-            var text = $('<div/>').addClass('text');
-            if (lastMessage == userid) {
-               var div = $('#messagebox .message:last-child');
-               div.find('.text').append(p);
-            } else {
-               text.append(p);
-               var avatar = $('<div/>').addClass('avatar').css('backgroundImage', "url('" + image + "')");
-               var away = $('<div/>').addClass('away');
-               var dist = 0;
-               if (conn == null && lat2 && lon2) {
-                  var from = new google.maps.LatLng(lat, lon);
-                  var to   = new google.maps.LatLng(lat2, lon2);
-                  dist = google.maps.geometry.spherical.computeDistanceBetween(from, to);
-                  dist = Math.ceil(dist);
-                  
-                  if(dist > 10000) {
-                     $(away).html('<strong>' + Math.ceil(dist/1000) + 'km</strong> away');
-                  } else if(dist > 1000) {
-                     $(away).html('<strong>' + (Math.round(dist / 100) / 10) + 'km</strong> away');
-                  } else {
-                     $(away).html('<strong>' + Math.ceil(dist) + 'm</strong> away');
-                  }
-               }
-               var div = $('<div />').addClass('message').append(text).append(avatar).append(away);
-            }
-
-            div.addClass(gender);
-            if (userid == user.id) {
-               div.addClass('mine');
-            }
-
-            $('#messagebox').append(div);
-
-            $('.message').addClass('show');
-
-            // smilies
-            e = p.text().replace(/(<([^>]+)>)/ig,"");
-            e = e.replace(/\:\)/g, '<i class="icon icon-smile"></i>');
-            e = e.replace(/\:\|/g, '<i class="icon icon-meh"></i>');
-            e = e.replace(/\:\(/g, '<i class="icon icon-frown"></i>');
-            e = e.replace(/\<3/g, '<i class="icon icon-heart"></i>');
-            e = e.replace(/\(y\)/g, '<i class="icon icon-hand-right"></i>');
-            
-            p.html(e);
-            
-            $('#textbox').css('bottom', 0);
-            $("html, body").animate({ scrollTop: $(document).height() }, 200);
-
-            lastMessage = userid;
-         }
-
-         
-         if (conn) {
-            conn.emit('msg', JSON.stringify(message));
-         }
-      }
-      
-      displayPage('home');
-      handleHomePage();
-      
-   });
-   
-</script>
 </head>
 <body>
    
@@ -398,32 +39,6 @@
    <div class="join-screen page" style="display: none;">
 
       <div id="fb-root"></div>
-
-      <script>
-
-         window.fbAsyncInit = function() {
-            
-            FB.init({
-               appId: '461663813917591', 
-               status: true, 
-               cookie: true,
-               xfbml: true,
-               oauth: true
-            });
-            
-            // run once with current status and whenever the status changes
-            FB.getLoginStatus(updateButton);
-            
-         };
-         
-         (function() {
-           var e = document.createElement('script'); e.async = true;
-           e.src = document.location.protocol 
-            + '//connect.facebook.net/en_US/all.js';
-           document.getElementById('fb-root').appendChild(e);
-         }());
-
-      </script>
 
       <div style="text-align:center;position:relative;margin-top:-200px;height:400px;top:50%;width:300px;left:50%;margin-left:-150px;">
          
@@ -468,7 +83,7 @@
    
    <div class="chat-screen page" style="display: none;">
       
-      <p id="topinfo" class="btn btn-mini" style="display:none;font-size:11px;position:fixed;top:15px;left:10px;z-index:200;">Talking with <span>0</span> people right now.</p>
+      <p id="topinfo" class="btn btn-mini" style="display:none;font-size:11px;position:fixed;bottom:60px;left:10px;z-index:1500;">Talking with <span>0</span> people right now.</p>
       
       <div id="messagebox">
          
@@ -486,5 +101,15 @@
       
    </div>
 
+   <script src="./js/vendor/jquery-1.9.1.js"></script>
+   <script src="./js/vendor/jquery.cookie.js"></script>
+   <script src="./js/vendor/jquery.timeago.js"></script>
+   <script src="./js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+
+   <script src="http://maps.google.com/maps/api/js?sensor=true&libraries=geometry"></script>
+
+   <script src="./js/vendor/jquery.textarea-expander.js"></script>
+   <script src="http://kinkie.im:8080/socket.io/socket.io.js"></script>
+   <script src="./js/bb.js"></script>
 </body>
 </html>
